@@ -12,10 +12,27 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
-  api.addFiles('rest.js');
+
+  api.use([
+    "underscore",
+    "cfs:http-methods",
+    "ddp",
+    "meteor"
+  ], "server");
+
+  api.addFiles([
+    'http-connection.js',
+    'http-subscription.js'
+  ], "server");
+
+  api.addFiles('rest.js', "server");
 });
 
 Package.onTest(function(api) {
+  api.use("underscore");
+  api.use("test-helpers");
+  api.use("mongo");
+  api.imply("http");
   api.use('tinytest');
   api.use('simple:rest');
   api.addFiles('rest-tests.js');

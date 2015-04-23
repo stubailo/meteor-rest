@@ -8,6 +8,7 @@ HttpSubscription = function (options) {
   this.responseData = {};
 
   this.connection = new HttpConnection(options.request);
+  this.userId = options.userId;
 };
 
 // So that we can listen to ready event in a reasonable way
@@ -60,7 +61,6 @@ _.extend(HttpSubscription.prototype, {
     }
   },
   ready: function () {
-    console.log("emitting ready");
     this.emit("ready", this._generateResponse());
   },
   onStop: function () {
@@ -68,14 +68,14 @@ _.extend(HttpSubscription.prototype, {
   },
   error: function (error) {
     if (error instanceof Meteor.Error) {
-      this.emit("ready", {
+      this.emit("error", {
         error: error.error,
         reason: error.reason,
         details: error.details
       });
     } else {
-      this.emit("ready", {
-        error: "400",
+      this.emit("error", {
+        error: "internal-server-error",
         reason: "Internal server error"
       });
     }

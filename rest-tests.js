@@ -51,6 +51,26 @@ if (Meteor.isServer) {
   }, {
     url: "widgets-with-index-above/:0"
   });
+
+  Meteor.publish("widgets-authorized", function () {
+    if (this.userId) {
+      return Widgets.find();
+    } else {
+      this.ready();
+    }
+  });
+
+  Meteor.method("return-five", function () {
+    return 5;
+  });
+
+  Meteor.method("return-five-auth", function () {
+    if (this.userId) {
+      return 5;
+    } else {
+      return 0;
+    }
+  });
 } else {
   testAsyncMulti("getting a publication", [
     function (test, expect) {
@@ -91,6 +111,57 @@ if (Meteor.isServer) {
       HTTP.get("/widgets-with-index-above/4", expect(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 5);
+      }));
+    }
+  ]);
+
+  var token;
+  testAsyncMulti("getting a publication with authorization", [
+    function (test, expect) {
+      Meteor.call("clearUsers", expect(function () {}));
+    },
+    function (test, expect) {
+      HTTP.post("/users/register", { data: {
+        username: "test",
+        email: "test@test.com",
+        password: "test"
+      }}, expect(function (err, res) {
+        test.equal(err, null);
+        test.isTrue(Match.test(res.data, {
+          id: String,
+          token: String,
+          tokenExpires: String
+        }));
+
+        token = res.data.token;
+      }));
+    },
+    function (test, expect) {
+      HTTP.get("/publications/widgets-authorized", {
+        headers: { Authorization: "Bearer " + token }
+      }, expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(_.size(res.data.widgets), 10);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("calling method", [
+    function (test, expect) {
+      HTTP.post("/methods/return-five", expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(res.data, 5);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("calling method with auth", [
+    function (test, expect) {
+      HTTP.post("/methods/return-five-auth", {
+        headers: { Authorization: "Bearer " + token }
+      }, expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(res.data, 5);
       }));
     }
   ]);

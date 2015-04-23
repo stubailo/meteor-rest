@@ -1,5 +1,3 @@
-var Future = Npm.require("fibers/future");
-
 var oldPublish = Meteor.publish;
 
 Meteor.publish = function (name, handler, options) {
@@ -17,38 +15,44 @@ Meteor.publish = function (name, handler, options) {
 
   var httpName = httpOptions["url"] || "publications/" + name;
 
-  var httpHandler = function () {
-    this.setContentType('application/json');
+  REST.get(httpName, function (req, res) {
+    var token = getTokenFromRequest(req);
+    var userId;
+    if (token) {
+      userId = getUserIdFromToken(token);
+    }
 
     var httpSubscription = new HttpSubscription({
-      request: this.request
+      request: req,
+      userId: userId
     });
-
-    console.log("got request!");
-
-    var fut = new Future();
 
     httpSubscription.on("ready", function (response) {
-      fut.return(response);
+      REST.sendResult(res, 200, response);
     });
 
-    var handlerArgs = getArgsFromRequest(this);
-    var res = handler.apply(httpSubscription, handlerArgs);
+    httpSubscription.on("error", function (error) {
+      REST.sendResult(res, 500, error);
+    });
+
+    var handlerArgs = getArgsFromRequest(req);
+
+    var handlerReturn = handler.apply(httpSubscription, handlerArgs);
 
     // Fast track for publishing cursors - we don't even need livequery here,
     // just making a normal DB query
-    if (res && res._publishCursor) {
+    if (handlerReturn && handlerReturn._publishCursor) {
       try {
-        httpPublishCursor(res, httpSubscription);
+        httpPublishCursor(handlerReturn, httpSubscription);
         httpSubscription.ready();
       } catch (e) {
         httpSubscription.error(e);
       }
-    } else if (res && _.isArray(res)) {
+    } else if (handlerReturn && _.isArray(handlerReturn)) {
       // We don't need to run the checks to see if the cursors overlap and stuff
       // because calling Meteor.publish will do that for us :]
       try {
-        _.each(res, function (cursor) {
+        _.each(handlerReturn, function (cursor) {
           httpPublishCursor(cursor, httpSubscription);
         });
 
@@ -57,17 +61,60 @@ Meteor.publish = function (name, handler, options) {
         httpSubscription.error(e);
       }
     }
-
-    return fut.wait();
-  };
-
-  var methodObj = {};
-  methodObj[httpName] = {
-    get: httpHandler
-  };
-
-  HTTP.methods(methodObj);
+  });
 };
+
+Meteor.method = function (name, handler, options) {
+  options = options || {};
+  var methodMap = {};
+  methodMap[name] = handler;
+
+  var httpName = options.url || "methods/" + name;
+
+  REST.post(httpName, function (req, res) {
+    var token = getTokenFromRequest(req);
+    var userId;
+    if (token) {
+      userId = getUserIdFromToken(token);
+    }
+
+    // XXX replace with a real one?
+    var methodInvocation = {
+      userId: userId
+    };
+
+    var handlerArgs = getArgsFromRequest(req);
+
+    try {
+      var handlerReturn = handler.apply(methodInvocation, handlerArgs);
+      REST.sendResult(res, 200, handlerReturn);
+    } catch (error) {
+      var errorJson;
+      if (error instanceof Meteor.Error) {
+        errorJson = {
+          error: error.error,
+          reason: error.reason,
+          details: error.details
+        };
+      } else {
+        errorJson = {
+          error: "internal-server-error",
+          reason: "Internal server error"
+        };
+      }
+      REST.sendResult(res, 500, errorJson);
+    }
+
+  });
+};
+
+function getTokenFromRequest(req) {
+  if (req.headers.authorization) {
+    return req.headers.authorization.split(" ")[1];
+  }
+
+  return null;
+}
 
 function httpPublishCursor(cursor, subscription) {
   _.each(cursor.fetch(), function (document) {
@@ -90,4 +137,33 @@ function getArgsFromRequest(methodScope) {
   });
 
   return args;
+}
+
+function hashToken(unhashedToken) {
+  check(unhashedToken, String);
+
+  // The Accounts._hashStampedToken function has a questionable API where
+  // it actually takes an object of which it only uses one property, so don't
+  // give it any more properties than it needs.
+  var hashStampedTokenArg = { token: unhashedToken };
+  var hashStampedTokenReturn = Accounts._hashStampedToken(hashStampedTokenArg);
+  check(hashStampedTokenReturn, {
+    hashedToken: String
+  });
+
+  // Accounts._hashStampedToken also returns an object, get rid of it and just
+  // get the one property we want.
+  return hashStampedTokenReturn.hashedToken;
+}
+
+function getUserIdFromToken(token) {
+  var user = Meteor.users.findOne({
+    "services.resume.loginTokens.hashedToken": hashToken(token)
+  });
+
+  if (user) {
+    return user._id;
+  } else {
+    return null;
+  }
 }

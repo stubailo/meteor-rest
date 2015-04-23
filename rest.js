@@ -32,7 +32,8 @@ Meteor.publish = function (name, handler, options) {
       fut.return(response);
     });
 
-    var res = _.bind(handler, httpSubscription).call();
+    var handlerArgs = getArgsFromRequest(this);
+    var res = handler.apply(httpSubscription, handlerArgs);
 
     // Fast track for publishing cursors - we don't even need livequery here,
     // just making a normal DB query
@@ -73,4 +74,20 @@ function httpPublishCursor(cursor, subscription) {
     subscription.added(cursor._cursorDescription.collectionName,
       document._id, document);
   });
+}
+
+function getArgsFromRequest(methodScope) {
+  var args = [];
+
+  _.each(methodScope.params, function (value, name) {
+    var parsed = parseInt(name, 10);
+
+    if (_.isNaN(parsed)) {
+      throw new Error("REST publish doesn't support parameters whose names aren't integers.");
+    }
+
+    args[parsed] = value;
+  });
+
+  return args;
 }

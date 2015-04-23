@@ -5,7 +5,7 @@ if (Meteor.isServer) {
 
   _.each(_.range(10), function (index) {
     Widgets.insert({
-      item: index
+      index: index
     });
   });
 
@@ -19,7 +19,7 @@ if (Meteor.isServer) {
 
   _.each(_.range(10), function (index) {
     Doodles.insert({
-      item: index
+      index: index
     });
   });
 
@@ -45,46 +45,53 @@ if (Meteor.isServer) {
   }, {
     url: "i-love-widgets"
   });
+
+  Meteor.publish("widgets-above-index", function (index) {
+    return Widgets.find({index: {$gt: parseInt(index, 10)}});
+  }, {
+    url: "widgets-with-index-above/:0"
+  });
 } else {
   testAsyncMulti("getting a publication", [
     function (test, expect) {
-      var done = expect();
-
-      HTTP.get("/publications/widgets", function (err, res) {
+      HTTP.get("/publications/widgets", expect(function (err, res) {
+        test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
-        done();
-      });
+      }));
     },
     function (test, expect) {
-      var done = expect();
-
-      HTTP.get("/publications/widgets-manual", function (err, res) {
+      HTTP.get("/publications/widgets-manual", expect(function (err, res) {
+        test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
-        done();
-      });
+      }));
     }
   ]);
 
   testAsyncMulti("getting a publication with multiple cursors", [
     function (test, expect) {
-      var done = expect();
-
-      HTTP.get("/publications/doodles-and-widgets", function (err, res) {
+      HTTP.get("/publications/doodles-and-widgets", expect(function (err, res) {
+        test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
         test.equal(_.size(res.data.doodles), 10);
-        done();
-      });
+      }));
     }
   ]);
 
   testAsyncMulti("getting a publication with custom URL", [
     function (test, expect) {
-      var done = expect();
-
-      HTTP.get("/i-love-widgets", function (err, res) {
+      HTTP.get("/i-love-widgets", expect(function (err, res) {
+        test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
-        done();
-      });
+      }));
+    }
+  ]);
+
+  testAsyncMulti("getting a publication with URL arguments", [
+    function (test, expect) {
+      HTTP.get("/widgets-with-index-above/4", expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(_.size(res.data.widgets), 5);
+      }));
     }
   ]);
 }

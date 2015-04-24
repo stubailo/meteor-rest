@@ -1,53 +1,60 @@
 JsonRoutes.post("/users/login", function (req, res) {
   var options = req.body;
 
-  check(options, {
-    email: Match.Optional(String),
-    username: Match.Optional(String),
-    password: String
-  });
+  try {
+    check(options, {
+      email: Match.Optional(String),
+      username: Match.Optional(String),
+      password: String
+    });
 
-  // Look up a user that has the username passed in, or has an email with the
-  // given address in their emails array. (Note that "email.address" is querying
-  // an array field)
-  var user = Meteor.users.findOne({
-    $or: [
-      { username: options.username },
-      { "emails.address": options.email }
-    ]
-  });
+    // Look up a user that has the username passed in, or has an email with the
+    // given address in their emails array. (Note that "email.address" is querying
+    // an array field)
+    var user = Meteor.users.findOne({
+      $or: [
+        { username: options.username },
+        { "emails.address": options.email }
+      ]
+    });
 
-  if (! user) {
-    throw new Meteor.Error("not-found",
-      "User with that username or email address not found.");
+    if (! user) {
+      throw new Meteor.Error("not-found",
+        "User with that username or email address not found.");
+    }
+
+    var result = Accounts._checkPassword(user, options.password);
+    check(result, {
+      userId: String,
+      error: Match.Optional(Meteor.Error)
+    });
+
+    if (result.error) {
+      throw result.error;
+    }
+
+    var stampedLoginToken = Accounts._generateStampedLoginToken();
+    check(stampedLoginToken, {
+      token: String,
+      when: Date
+    });
+
+    Accounts._insertLoginToken(result.userId, stampedLoginToken);
+
+    var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
+    check(tokenExpiration, Date);
+
+    JsonRoutes.sendResult(res, 200, {
+      id: result.userId,
+      token: stampedLoginToken.token,
+      tokenExpires: tokenExpiration
+    });
+  } catch (err) {
+    var errJson = convertErrorToJson(err);
+    console.log("Error in login: ", err);
+
+    JsonRoutes.sendResult(res, 500, errJson);
   }
-
-  var result = Accounts._checkPassword(user, options.password);
-  check(result, {
-    userId: String,
-    error: Match.Optional(Meteor.Error)
-  });
-
-  if (result.error) {
-    throw result.error;
-  }
-
-  var stampedLoginToken = Accounts._generateStampedLoginToken();
-  check(stampedLoginToken, {
-    token: String,
-    when: Date
-  });
-
-  Accounts._insertLoginToken(result.userId, stampedLoginToken);
-
-  var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
-  check(tokenExpiration, Date);
-
-  JsonRoutes.sendResult(res, 200, {
-    id: result.userId,
-    token: stampedLoginToken.token,
-    tokenExpires: tokenExpiration
-  });
 });
 
 JsonRoutes.post("/users/register", function (req, res) {

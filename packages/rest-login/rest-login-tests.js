@@ -15,10 +15,11 @@ if (Meteor.isServer) {
     }
   });
 } else {
+  var loginEndpoint = '/users/login';
   var registerEndpoint = '/users/register';
   var userId;
 
-  testAsyncMulti("users - register over HTTP", [
+  testAsyncMulti("register and login over HTTP", [
     function (test, expect) {
       Meteor.call("clearUsers", expect(function () {}));
     },
@@ -57,6 +58,7 @@ if (Meteor.isServer) {
         });
       }));
     },
+
     function (test, expect) {
       Meteor.loginWithPassword("newuser", "test", expect(function (err) {
         // Make sure there is no error
@@ -64,6 +66,19 @@ if (Meteor.isServer) {
 
         // Make sure we logged into the right user
         test.equal(Meteor.userId(), userId);
+      }));
+    },
+
+    function (test, expect) {
+      HTTP.post(loginEndpoint, { data: {
+        username: "newuser",
+        password: "test"
+      } }, expect(function (err, res) {
+        // Make sure there is no error
+        test.equal(err, null);
+
+        // Make sure we logged into the right user
+        test.equal(res.data.id, userId);
       }));
     },
 

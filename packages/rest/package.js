@@ -13,23 +13,17 @@ Package.describe({
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
 
-  Npm.depends({
-    connect: "2.11.0",
-    "connect-route": "0.1.5"
-  });
-
   api.use([
     "underscore",
     "cfs:http-methods",
     "ddp",
     "meteor",
     "webapp",
-    "accounts-password"
+    "accounts-password",
+    "simple:json-routes"
   ], "server");
 
   api.addFiles([
-    'dead-simple-rest.js',
-    'http-login.js',
     'http-connection.js',
     'http-subscription.js'
   ], "server");
@@ -45,7 +39,7 @@ Package.onTest(function(api) {
   api.use("random");
   api.imply("http");
   api.use('tinytest');
+  api.use('rest-login');
   api.use('simple:rest');
-  api.addFiles('http-login-tests.js');
   api.addFiles('rest-tests.js');
 });

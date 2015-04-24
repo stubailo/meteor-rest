@@ -1,4 +1,4 @@
-REST.post("/users/login", function (req, res) {
+JsonRoutes.post("/users/login", function (req, res) {
   var options = req.body;
 
   check(options, {
@@ -43,14 +43,14 @@ REST.post("/users/login", function (req, res) {
   var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
   check(tokenExpiration, Date);
 
-  REST.sendResult(res, 200, {
+  JsonRoutes.sendResult(res, 200, {
     id: result.userId,
     token: stampedLoginToken.token,
     tokenExpires: tokenExpiration
   });
 });
 
-REST.post("/users/register", function (req, res) {
+JsonRoutes.post("/users/register", function (req, res) {
   var options = req.body;
 
   try {
@@ -77,15 +77,16 @@ REST.post("/users/register", function (req, res) {
     check(tokenExpiration, Date);
 
     // Return the same things the login method returns
-    REST.sendResult(res, 200, {
+    JsonRoutes.sendResult(res, 200, {
       token: stampedLoginToken.token,
       tokenExpires: tokenExpiration,
       id: userId
     });
   } catch (err) {
     var errJson = convertErrorToJson(err);
+    console.log("Error in registration: ", err);
 
-    REST.sendResult(res, 500, errJson);
+    JsonRoutes.sendResult(res, 500, errJson);
   }
 });
 

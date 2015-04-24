@@ -15,7 +15,7 @@ Meteor.publish = function (name, handler, options) {
 
   var httpName = httpOptions["url"] || "publications/" + name;
 
-  REST.get(httpName, function (req, res) {
+  JsonRoutes.get(httpName, function (req, res) {
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -28,11 +28,11 @@ Meteor.publish = function (name, handler, options) {
     });
 
     httpSubscription.on("ready", function (response) {
-      REST.sendResult(res, 200, response);
+      JsonRoutes.sendResult(res, 200, response);
     });
 
     httpSubscription.on("error", function (error) {
-      REST.sendResult(res, 500, error);
+      JsonRoutes.sendResult(res, 500, error);
     });
 
     var handlerArgs = getArgsFromRequest(req);
@@ -71,7 +71,7 @@ Meteor.method = function (name, handler, options) {
 
   var httpName = options.url || "methods/" + name;
 
-  REST.post(httpName, function (req, res) {
+  JsonRoutes.post(httpName, function (req, res) {
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -87,7 +87,7 @@ Meteor.method = function (name, handler, options) {
 
     try {
       var handlerReturn = handler.apply(methodInvocation, handlerArgs);
-      REST.sendResult(res, 200, handlerReturn);
+      JsonRoutes.sendResult(res, 200, handlerReturn);
     } catch (error) {
       var errorJson;
       if (error instanceof Meteor.Error) {
@@ -102,7 +102,7 @@ Meteor.method = function (name, handler, options) {
           reason: "Internal server error"
         };
       }
-      REST.sendResult(res, 500, errorJson);
+      JsonRoutes.sendResult(res, 500, errorJson);
     }
 
   });

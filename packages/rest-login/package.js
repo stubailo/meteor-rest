@@ -12,7 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
-  api.addFiles('rest-login.js');
+  api.addFiles('rest-login.js', "server");
   api.use('accounts-password');
   api.use('simple:json-routes');
 });

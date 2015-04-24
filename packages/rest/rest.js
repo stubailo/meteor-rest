@@ -64,12 +64,20 @@ Meteor.publish = function (name, handler, options) {
   });
 };
 
+var oldMethods = Object.getPrototypeOf(Meteor.server).methods;
+
 Meteor.method = function (name, handler, options) {
   options = options || {};
   var methodMap = {};
   methodMap[name] = handler;
+  oldMethods.call(Meteor.server, methodMap);
 
-  var httpName = options.url || "methods/" + name;
+  if (name[0] !== "/") {
+    name = "/" + name;
+  }
+
+  var autoName = "methods" + name;
+  var httpName = options.url || autoName;
 
   JsonRoutes.post(httpName, function (req, res) {
     var token = getTokenFromRequest(req);
@@ -104,7 +112,12 @@ Meteor.method = function (name, handler, options) {
       }
       JsonRoutes.sendResult(res, 500, errorJson);
     }
+  });
+};
 
+Object.getPrototypeOf(Meteor.server).methods = function (methodMap) {
+  _.each(methodMap, function (handler, name) {
+    Meteor.method(name, handler);
   });
 };
 

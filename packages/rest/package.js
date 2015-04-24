@@ -41,5 +41,6 @@ Package.onTest(function(api) {
   api.use('tinytest');
   api.use('rest-login');
   api.use('simple:rest');
+  api.use('simple:json-routes');
   api.addFiles('rest-tests.js');
 });

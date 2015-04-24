@@ -71,6 +71,21 @@ if (Meteor.isServer) {
       return 0;
     }
   });
+
+  Tinytest.add("routes exist for mutator methods", function (test) {
+    var mutatorMethodPaths = [
+      "/methods/widgets/insert",
+      "/methods/widgets/update",
+      "/methods/widgets/remove",
+      "/methods/doodles/insert",
+      "/methods/doodles/update",
+      "/methods/doodles/remove",
+    ];
+
+    _.each(mutatorMethodPaths, function (path) {
+      test.isTrue(!! _.findWhere(JsonRoutes.routes, {path: path}));
+    });
+  });
 } else {
   testAsyncMulti("getting a publication", [
     function (test, expect) {

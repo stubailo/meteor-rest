@@ -1,4 +1,4 @@
-JsonRoutes.post("/users/login", function (req, res) {
+JsonRoutes.add("post", "/users/login", function (req, res) {
   var options = req.body;
 
   try {
@@ -57,7 +57,7 @@ JsonRoutes.post("/users/login", function (req, res) {
   }
 });
 
-JsonRoutes.post("/users/register", function (req, res) {
+JsonRoutes.add("post", "/users/register", function (req, res) {
   var options = req.body;
 
   try {

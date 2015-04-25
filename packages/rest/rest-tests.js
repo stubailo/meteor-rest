@@ -1,25 +1,27 @@
 if (Meteor.isServer) {
   var Widgets = new Mongo.Collection("widgets");
 
-  Widgets.remove({});
-
-  _.each(_.range(10), function (index) {
-    Widgets.insert({
-      index: index
-    });
-  });
-
   Meteor.publish("widgets", function () {
     return Widgets.find();
   });
 
   var Doodles = new Mongo.Collection("doodles");
 
-  Doodles.remove({});
+  Meteor.method("reset-db", function () {
+    Widgets.remove({});
 
-  _.each(_.range(10), function (index) {
-    Doodles.insert({
-      index: index
+    _.each(_.range(10), function (index) {
+      Widgets.insert({
+        index: index
+      });
+    });
+
+    Doodles.remove({});
+
+    _.each(_.range(10), function (index) {
+      Doodles.insert({
+        index: index
+      });
     });
   });
 
@@ -94,6 +96,9 @@ if (Meteor.isServer) {
   });
 } else {
   testAsyncMulti("getting a publication", [
+    function (test, expect) {
+      HTTP.post("/methods/reset-db", expect(function () {}));
+    },
     function (test, expect) {
       HTTP.get("/publications/widgets", expect(function (err, res) {
         test.equal(err, null);

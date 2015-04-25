@@ -10,29 +10,32 @@ WebApp.rawConnectHandlers.use(connect.query());
 // List of all defined JSON API endpoints
 JsonRoutes.routes = [];
 
-_.each(["get", "post"], function (method) {
-  JsonRoutes[method] = function (path, handler) {
-    // Make sure path starts with a slash
-    if (path[0] !== "/") {
-      path = "/" + path;
-    }
+// Save reference to router for later
+var connectRouter;
 
-    // Add to list of known endpoints
-    JsonRoutes.routes.push({
-      method: method,
-      path: path
-    });
+// Register as a middleware
+WebApp.rawConnectHandlers.use(connectRoute(function (router) {
+  connectRouter = router;
+}));
 
-    // Register as a middleware
-    WebApp.rawConnectHandlers.use(connectRoute(function (router) {
-      router[method](path, function (req, res, next) {
-        Fiber(function () {
-          handler(req, res, next);
-        }).run();
-      });
-    }));
-  };
-});
+JsonRoutes.add = function (method, path, handler) {
+  // Make sure path starts with a slash
+  if (path[0] !== "/") {
+    path = "/" + path;
+  }
+
+  // Add to list of known endpoints
+  JsonRoutes.routes.push({
+    method: method,
+    path: path
+  });
+
+  connectRouter[method](path, function (req, res, next) {
+    Fiber(function () {
+      handler(req, res, next);
+    }).run();
+  });
+};
 
 JsonRoutes.setNoCacheHeaders = function (res) {
   res.setHeader('Cache-Control', 'no-store');

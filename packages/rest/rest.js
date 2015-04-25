@@ -15,7 +15,7 @@ Meteor.publish = function (name, handler, options) {
 
   var httpName = httpOptions["url"] || "publications/" + name;
 
-  JsonRoutes.get(httpName, function (req, res) {
+  JsonRoutes.add("get", httpName, function (req, res) {
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -79,7 +79,7 @@ Meteor.method = function (name, handler, options) {
   var autoName = "methods" + name;
   var httpName = options.url || autoName;
 
-  JsonRoutes.post(httpName, function (req, res) {
+  JsonRoutes.add("post", httpName, function (req, res) {
     if (name[0] === "/") { console.log(getArgsFromRequest(req)) }
     var token = getTokenFromRequest(req);
     var userId;

@@ -1,4 +1,6 @@
-# json-routes
+# simple:json-routes
+
+<https://atmospherejs.com/simple/json-routes>
 
 The simplest bare-bones way to define server-side JSON API endpoints, without
 any extra functionality. Based on [connect-route](https://github.com/baryshev/connect-route).

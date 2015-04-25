@@ -3,6 +3,16 @@
 The simplest bare-bones way to define server-side JSON API endpoints, without
 any extra functionality. Based on [connect-route](https://github.com/baryshev/connect-route).
 
+## Example
+
+```js
+JsonRoutes.add("get", "/posts/:id", function (req, res, next) {
+  var id = req.params.id;
+
+  JsonRoutes.sendResult(res, 200, Posts.findOne(id));
+});
+```
+
 ## API
 
 ### JsonRoutes.add(method, path, handler)

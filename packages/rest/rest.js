@@ -80,6 +80,7 @@ Meteor.method = function (name, handler, options) {
   var httpName = options.url || autoName;
 
   JsonRoutes.post(httpName, function (req, res) {
+    if (name[0] === "/") { console.log(getArgsFromRequest(req)) }
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -105,6 +106,7 @@ Meteor.method = function (name, handler, options) {
           details: error.details
         };
       } else {
+        console.log("Internal server error in " + httpName, error, error.stack);
         errorJson = {
           error: "internal-server-error",
           reason: "Internal server error"
@@ -138,6 +140,10 @@ function httpPublishCursor(cursor, subscription) {
 
 function getArgsFromRequest(methodScope) {
   var args = [];
+  if (methodScope.method === "POST") {
+    // by default, the request body is an array which is the arguments
+    args = methodScope.body;
+  }
 
   _.each(methodScope.params, function (value, name) {
     var parsed = parseInt(name, 10);

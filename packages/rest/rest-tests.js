@@ -86,6 +86,12 @@ if (Meteor.isServer) {
       test.isTrue(!! _.findWhere(JsonRoutes.routes, {path: path}));
     });
   });
+
+  Widgets.allow({
+    insert: function () {
+      return true;
+    }
+  });
 } else {
   testAsyncMulti("getting a publication", [
     function (test, expect) {
@@ -177,6 +183,22 @@ if (Meteor.isServer) {
       }, expect(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("mutator method", [
+    function (test, expect) {
+      HTTP.post("/methods/widgets/insert", { data: [{
+        index: 10
+      }] }, expect(function (err) {
+        test.equal(err, null);
+      }));
+    },
+    function (test, expect) {
+      HTTP.get("/publications/widgets", expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(_.size(res.data.widgets), 11);
       }));
     }
   ]);

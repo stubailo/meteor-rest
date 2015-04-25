@@ -80,7 +80,6 @@ Meteor.method = function (name, handler, options) {
   var httpName = options.url || autoName;
 
   JsonRoutes.add("post", httpName, function (req, res) {
-    if (name[0] === "/") { console.log(getArgsFromRequest(req)) }
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {

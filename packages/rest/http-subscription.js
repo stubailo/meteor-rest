@@ -84,6 +84,12 @@ _.extend(HttpSubscription.prototype, {
     this.responseData[collection] = this.responseData[collection] || {};
   },
   _generateResponse: function () {
-    return this.responseData;
+    var output = {};
+
+    _.each(this.responseData, function (documents, collectionName) {
+      output[collectionName] = _.values(documents);
+    });
+
+    return output;
   }
 });

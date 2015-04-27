@@ -92,6 +92,9 @@ if (Meteor.isServer) {
   Widgets.allow({
     insert: function () {
       return true;
+    },
+    remove: function () {
+      return false;
     }
   });
 } else {
@@ -192,11 +195,12 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("mutator method", [
+  var widgets = [];
+  testAsyncMulti("mutator methods", [
     function (test, expect) {
       HTTP.post("/methods/widgets/insert", { data: [{
         index: 10
-      }] }, expect(function (err) {
+      }] }, expect(function (err, res) {
         test.equal(err, null);
       }));
     },
@@ -204,6 +208,14 @@ if (Meteor.isServer) {
       HTTP.get("/publications/widgets", expect(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 11);
+        widgets = res.data.widgets;
+      }));
+    },
+    function (test, expect) {
+      HTTP.post("/methods/widgets/remove", { data: [{
+        _id: _.values(widgets)[0]._id
+      }] }, expect(function (err) {
+        test.equal(err.response.data.reason, "Access denied");
       }));
     }
   ]);

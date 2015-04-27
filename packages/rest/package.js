@@ -20,15 +20,16 @@ Package.onUse(function(api) {
     "meteor",
     "webapp",
     "accounts-password",
-    "simple:json-routes"
+    "simple:json-routes",
+    "minimongo"
   ], "server");
 
   api.addFiles([
     'http-connection.js',
-    'http-subscription.js'
+    'http-subscription.js',
+    'rest.js',
+    'list-api.js'
   ], "server");
-
-  api.addFiles('rest.js', "server");
 });
 
 Package.onTest(function(api) {

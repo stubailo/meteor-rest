@@ -1,4 +1,6 @@
-# Packages to help you build a REST API for your Meteor app
+# REST for Meteor
+
+I'm working on a set of packages that will make it easy to create a REST API for your Meteor app.
 
 ## Completed
 

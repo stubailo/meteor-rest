@@ -1,3 +1,7 @@
+JsonRoutes.add("options", "/users/login", function (req, res) {
+  JsonRoutes.sendResult(res, 200);
+});
+
 JsonRoutes.add("post", "/users/login", function (req, res) {
   var options = req.body;
 
@@ -55,6 +59,10 @@ JsonRoutes.add("post", "/users/login", function (req, res) {
 
     JsonRoutes.sendResult(res, 500, errJson);
   }
+});
+
+JsonRoutes.add("options", "/users/register", function (req, res) {
+  JsonRoutes.sendResult(res, 200);
 });
 
 JsonRoutes.add("post", "/users/register", function (req, res) {

@@ -11,12 +11,12 @@ Add this package to get an automatic JSON HTTP API for all of your Meteor app's 
 1. Using the API
   1. [Publications](#publications)
   2. [Methods](#methods)
-  3. [Collection insert/update/remove](#collectionmethods)
+  3. [Collection insert/update/remove](#collection-methods)
 2. Additional tools
-  1. [Listing all API methods](#listingallapimethods)
-  2. [Cross origin requests](#cross-originrequests)
+  1. [Listing all API methods](#listing-all-api-methods)
+  2. [Cross origin requests](#cross-origin-requests)
   3. [Authentication](#authentication)
-  4. [Logging in over HTTP](#logginginoverhttp)
+  4. [Logging in over HTTP](#logging-in-over-http)
 
 ### Publications
 

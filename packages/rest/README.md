@@ -1,8 +1,12 @@
-Work in progress, please do not use right now
-
 ## One-step JSON API for your publications and methods
 
-When you add this package, with exactly 0 code you get a default HTTP API that returns JSON for your publications and methods.
+Add this package to get a JSON HTTP API for all of your Meteor app's publications and methods. This can be useful for many things:
+
+- Build a simple native mobile app on top of your Meteor app's data
+- Expose an API for other people to get data
+- Integrate with other frameworks and platforms without having to integrate a DDP client
+
+### Table of contents
 
 1. Using the API
   1. [Publications](#publications)

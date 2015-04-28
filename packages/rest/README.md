@@ -1,4 +1,4 @@
-Current status: pre-1.0 preview release.
+Current status: pre-1.0 preview release - it's stable, but might not have all of the features you need.
 
 ## One-step JSON API for your publications and methods
 

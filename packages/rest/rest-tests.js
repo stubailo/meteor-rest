@@ -246,14 +246,9 @@ if (Meteor.isServer) {
 
   testAsyncMulti("getting publication with JQuery", [
     function (test, expect) {
-      $.ajax({
-        method: "get",
-        url: "/publications/widgets",
-        contentType: "application/json",
-        success: expect(function (data) {
-          test.equal(data.widgets.length, 11);
-        })
-      });
+      $.get("/publications/widgets", expect(function (data) {
+        test.equal(data.widgets.length, 11);
+      }));
     }
   ]);
 }

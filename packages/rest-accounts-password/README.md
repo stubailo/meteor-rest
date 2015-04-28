@@ -1,4 +1,4 @@
-# Log in and register password-based accounts over HTTP
+# Log in and register password accounts over HTTP
 
 If you have accounts-password in your app, and you want to be able to use it over HTTP, this is the package for you. Call these APIs to get an access token, and pass that token to API methods you defined with [`simple:rest`](https://github.com/stubailo/meteor-rest/blob/master/packages/rest/README.md) to call methods and publications that require login.
 

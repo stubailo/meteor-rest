@@ -186,11 +186,3 @@ HTTP.post("/methods/return-five-auth", {
 ### Logging in over HTTP
 
 This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. For that, use the other packages in this repository, for example `simple:rest-accounts-password`.
-
-## Notes
-
-### Authentication
-
-
-
-HTTP header: `Authorization: Bearer <token>`

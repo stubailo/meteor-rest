@@ -167,7 +167,7 @@ function hashToken(unhashedToken) {
   // it actually takes an object of which it only uses one property, so don't
   // give it any more properties than it needs.
   var hashStampedTokenArg = { token: unhashedToken };
-  var hashStampedTokenReturn = Accounts._hashStampedToken(hashStampedTokenArg);
+  var hashStampedTokenReturn = Package["accounts-base"].Accounts._hashStampedToken(hashStampedTokenArg);
   check(hashStampedTokenReturn, {
     hashedToken: String
   });
@@ -178,6 +178,10 @@ function hashToken(unhashedToken) {
 }
 
 function getUserIdFromToken(token) {
+  if (! _.has(Package, "accounts-base")) {
+    return null;
+  }
+
   var user = Meteor.users.findOne({
     "services.resume.loginTokens.hashedToken": hashToken(token)
   });

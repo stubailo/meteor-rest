@@ -1,5 +1,5 @@
 Package.describe({
-  name: 'rest-login',
+  name: 'simple:rest-accounts-password',
   version: '0.0.1',
   // Brief, one-line summary of the package.
   summary: '',
@@ -19,7 +19,7 @@ Package.onUse(function(api) {
 
 Package.onTest(function(api) {
   api.use('tinytest');
-  api.use('rest-login');
+  api.use('simple:rest-accounts-password');
   api.use('test-helpers');
   api.addFiles('rest-login-tests.js');
 });

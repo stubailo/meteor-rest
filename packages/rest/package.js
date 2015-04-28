@@ -18,11 +18,14 @@ Package.onUse(function(api) {
     "ddp",
     "meteor",
     "webapp",
-    "accounts-password",
     "simple:json-routes@1.0.1",
     "minimongo",
     "ejson"
   ], "server");
+
+  api.use([
+    "accounts-base"
+  ], "server", {weak: true});
 
   api.addFiles([
     'http-connection.js',
@@ -33,14 +36,13 @@ Package.onUse(function(api) {
 });
 
 Package.onTest(function(api) {
-  api.use("accounts-password");
+  api.use("simple:rest-accounts-password");
   api.use("underscore");
   api.use("test-helpers");
   api.use("mongo");
   api.use("random");
   api.imply("http");
   api.use('tinytest');
-  api.use('rest-login');
   api.use('simple:rest');
   api.use('simple:json-routes');
   api.addFiles('rest-tests.js');

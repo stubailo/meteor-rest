@@ -78,6 +78,10 @@ if (Meteor.isServer) {
     }
   });
 
+  Meteor.method("add-all-arguments", function (a, b, c) {
+    return a + b + c;
+  });
+
   Tinytest.add("routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
       "/methods/widgets/insert",
@@ -102,6 +106,7 @@ if (Meteor.isServer) {
     }
   });
 } else {
+  // Using Meteor HTTP
   testAsyncMulti("getting a publication", [
     function (test, expect) {
       HTTP.post("/methods/reset-db", expect(function () {}));
@@ -221,6 +226,34 @@ if (Meteor.isServer) {
       }] }, expect(function (err) {
         test.equal(err.response.data.reason, "Access denied");
       }));
+    }
+  ]);
+
+  // Some tests with JQuery as well
+  testAsyncMulti("calling method with JQuery", [
+    function (test, expect) {
+      $.ajax({
+        method: "post",
+        url: "/methods/add-all-arguments",
+        data: JSON.stringify([1, 2, 3]),
+        contentType: "application/json",
+        success: expect(function (data) {
+          test.equal(data, 6);
+        })
+      });
+    }
+  ]);
+
+  testAsyncMulti("getting publication with JQuery", [
+    function (test, expect) {
+      $.ajax({
+        method: "get",
+        url: "/publications/widgets",
+        contentType: "application/json",
+        success: expect(function (data) {
+          test.equal(data.widgets.length, 11);
+        })
+      });
     }
   ]);
 }

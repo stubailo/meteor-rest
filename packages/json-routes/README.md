@@ -39,3 +39,14 @@ function.
 - `code` - the status code to send. `200` for OK, `500` for internal error, etc.
 - `data` - the data you want to send back, will be sent as serialized JSON with
 content type `application/json`.
+
+### JsonRoutes.setResponseHeaders(headerObj)
+
+Set the headers returned by `JsonRoutes.sendResult`. Default value is:
+
+```js
+{
+  "Cache-Control": "no-store",
+  "Pragma": "no-cache"
+}
+```

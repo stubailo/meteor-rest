@@ -37,13 +37,23 @@ JsonRoutes.add = function (method, path, handler) {
   });
 };
 
-JsonRoutes.setNoCacheHeaders = function (res) {
-  res.setHeader('Cache-Control', 'no-store');
-  res.setHeader('Pragma', 'no-cache');
+var responseHeaders = {
+  "Cache-Control": "no-store",
+  "Pragma": "no-cache"
+};
+
+JsonRoutes.setResponseHeaders = function (headers) {
+  responseHeaders = headers;
+};
+
+var setHeaders = function (res) {
+  _.each(responseHeaders, function (value, key) {
+    res.setHeader(key, value);
+  });
 };
 
 JsonRoutes.sendResult = function (res, code, json) {
-  JsonRoutes.setNoCacheHeaders(res);
+  setHeaders(res);
   res.statusCode = code;
 
   if (json !== undefined) {

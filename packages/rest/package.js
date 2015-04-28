@@ -15,12 +15,11 @@ Package.onUse(function(api) {
 
   api.use([
     "underscore",
-    "cfs:http-methods",
     "ddp",
     "meteor",
     "webapp",
     "accounts-password",
-    "simple:json-routes",
+    "simple:json-routes@1.0.0",
     "minimongo"
   ], "server");
 

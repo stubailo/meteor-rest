@@ -1,8 +1,11 @@
 Work in progress, please do not use right now
 
-## Default JSON API for publications and methods
+## One-step JSON API for your publications and methods
 
 When you add this package, with exactly 0 code you get a default HTTP API that returns JSON for your publications and methods.
+
+- [Publications](#publications)
+- [Methods](#methods)
 
 ### Publications
 

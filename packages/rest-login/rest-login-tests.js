@@ -39,7 +39,6 @@ if (Meteor.isServer) {
       testErrorReason({}, "Match failed");
     },
 
-    // First, test registration without session
     function (test, expect) {
       HTTP.post(registerEndpoint, { data: {
         username: "newuser",
@@ -101,6 +100,49 @@ if (Meteor.isServer) {
         email: "newuser@example.com"
       } }, expect(function (err) {
         test.equal(err.response.data.reason, "Email already exists.");
+      }));
+    },
+
+    // Make sure we can register with no username, like accounts-password allows
+    function (test, expect) {
+      HTTP.post(registerEndpoint, { data: {
+        password: "test",
+        email: "newusernopassword@example.com"
+      } }, expect(function (err, res) {
+        if (err) { throw err; }
+
+        // Make sure results have the right shape
+        check(res.data, {
+          token: String,
+          tokenExpires: String,
+          id: String
+        });
+      }));
+    },
+
+    // Make sure we can register with no email, like accounts-password allows
+    function (test, expect) {
+      HTTP.post(registerEndpoint, { data: {
+        username: "newusernoemail",
+        password: "test"
+      } }, expect(function (err, res) {
+        if (err) { throw err; }
+
+        // Make sure results have the right shape
+        check(res.data, {
+          token: String,
+          tokenExpires: String,
+          id: String
+        });
+      }));
+    },
+
+    // Make sure we need an email or a username
+    function (test, expect) {
+      HTTP.post(registerEndpoint, { data: {
+        password: "test"
+      } }, expect(function (err, res) {
+        test.equal(err.response.data.reason, "Need to set a username or email");
       }));
     }
   ]);

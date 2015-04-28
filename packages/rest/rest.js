@@ -91,7 +91,14 @@ Meteor.method = function (name, handler, options) {
 
     // XXX replace with a real one?
     var methodInvocation = {
-      userId: userId
+      userId: userId,
+      setUserId: function () {
+        throw Error("setUserId not implemented in this version of simple:rest");
+      },
+      isSimulation: false,
+      unblock: function () {
+        // no-op
+      }
     };
 
     var handlerArgs = getArgsFromRequest(req);

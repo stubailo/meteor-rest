@@ -185,4 +185,7 @@ HTTP.post("/methods/return-five-auth", {
 
 ### Logging in over HTTP
 
-This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. For that, use the other packages in this repository, for example `simple:rest-accounts-password`.
+This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. Use the following packages to log in over HTTP:
+
+- [`simple:rest-accounts-password`](https://github.com/stubailo/meteor-rest/blob/master/packages/rest-accounts-password/README.md)
+- More coming soon for login with Facebook, Google, etc

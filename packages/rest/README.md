@@ -4,9 +4,15 @@ Work in progress, please do not use right now
 
 When you add this package, with exactly 0 code you get a default HTTP API that returns JSON for your publications and methods.
 
-- [Publications](#publications)
-- [Methods](#methods)
-- [Collection insert/update/remove](#collectionmethods)
+1. Using the API
+  1. [Publications](#publications)
+  2. [Methods](#methods)
+  3. [Collection insert/update/remove](#collectionmethods)
+2. Additional tools
+  1. [Listing all API methods](#listingallapimethods)
+  2. [Cross origin requests](#crossoriginrequests)
+  3. [Authentication](#authentication)
+  4. [Logging in over HTTP](#logginginoverhttp)
 
 ### Publications
 
@@ -90,10 +96,97 @@ POST /methods/<collection-name>/remove
 
 Pass arguments the same way as descibed in [methods](#methods) above.
 
+### Listing all API methods
+
+This package defines a special publication that publishes a list of all of your app's API methods. Call it like this:
+
+```http
+GET /publications/api-routes
+```
+
+The result looks like:
+
+```js
+{
+  "api-routes": [
+    {
+      "_id": "get /publications/api-routes",
+      "method": "get",
+      "path": "/publications/api-routes"
+    },
+    {
+      "_id": "options /users/login",
+      "method": "options",
+      "path": "/users/login"
+    },
+    {
+      "_id": "post /users/login",
+      "method": "post",
+      "path": "/users/login"
+    },
+    {
+      "_id": "options /users/register",
+      "method": "options",
+      "path": "/users/register"
+    },
+    {
+      "_id": "post /users/register",
+      "method": "post",
+      "path": "/users/register"
+    },
+    {
+      "_id": "options /methods/lists/insert",
+      "method": "options",
+      "path": "/methods/lists/insert"
+    },
+    ...
+  ]
+}
+```
+
+> Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
+
+### Cross-origin requests
+
+If you would like to use your API from the client side of a different app, you need to return a special header. You can do this by hooking into a method on the `simple:json-routes` package, like so:
+
+```js
+// Enable cross origin requests for all endpoints
+JsonRoutes.setResponseHeaders({
+  "Cache-Control": "no-store",
+  "Pragma": "no-cache",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, PUT, POST, DELETE, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With"
+});
+```
+
+### Authentication
+
+API endpoints generated with this package accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header).
+
+```http
+Authorization: Bearer <token>
+```
+
+Here is how you could use Meteor's `http` package to call a method as a logged in user. Inside the method, the current user can be accessed the exact same way as in a normal method call, through `this.userId`.
+
+```js
+HTTP.post("/methods/return-five-auth", {
+  headers: { Authorization: "Bearer " + token }
+}, function (err, res) {
+  console.log(res.data); // 5
+});
+```
+
+### Logging in over HTTP
+
+This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. For that, use the other packages in this repository, for example `simple:rest-accounts-password`.
+
 ## Notes
 
 ### Authentication
 
-Based on <http://tools.ietf.org/html/rfc6750#section-2.1> and <http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header>
+
 
 HTTP header: `Authorization: Bearer <token>`

@@ -12,6 +12,8 @@ Add this package to get an automatic JSON HTTP API for all of your Meteor app's 
 - Expose an API for other people to get data
 - Integrate with other frameworks and platforms without having to integrate a DDP client
 
+Keep in mind that this package is _literally_ calling your Meteor methods and publications. This means if you have any nice packages that do roles, authentication, permissions, etc. for your app, those packages should still work just fine over HTTP.
+
 ### Table of contents
 
 1. Using the API

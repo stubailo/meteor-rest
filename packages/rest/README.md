@@ -6,6 +6,7 @@ When you add this package, with exactly 0 code you get a default HTTP API that r
 
 - [Publications](#publications)
 - [Methods](#methods)
+- [Collection insert/update/remove](#collectionmethods)
 
 ### Publications
 
@@ -75,6 +76,19 @@ Then you can call this method with:
 ```http
 POST /return-five
 ```
+
+### Collection methods
+
+The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 
+Don't worry, they follow the exact same security rules as in your Meteor DDP app, and allow/deny still works perfectly. Call them like this:
+
+```http
+POST /methods/<collection-name>/insert
+POST /methods/<collection-name>/update
+POST /methods/<collection-name>/remove
+```
+
+Pass arguments the same way as descibed in [methods](#methods) above.
 
 ## Notes
 

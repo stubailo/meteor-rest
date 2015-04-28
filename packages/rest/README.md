@@ -18,6 +18,7 @@ Add this package to get an automatic JSON HTTP API for all of your Meteor app's 
   1. [Publications](#publications)
   2. [Methods](#methods)
   3. [Collection insert/update/remove](#collection-methods)
+  4. [Example code with JQuery](#example-code-with-jquery)
 2. Additional tools
   1. [Listing all API methods](#listing-all-api-methods)
   2. [Cross origin requests](#cross-origin-requests)
@@ -105,6 +106,28 @@ POST /methods/<collection-name>/remove
 ```
 
 Pass arguments the same way as descibed in [methods](#methods) above.
+
+### Example code with JQuery
+
+Here is how you might call your shiny new HTTP API using JQuery. Note that you must set `contentType` to `"application/json"`, because by default JQuery uses form serialization rather than JSON serialization.
+
+```js
+// Calling a method
+$.ajax({
+  method: "post",
+  url: "/methods/add-all-arguments",
+  data: JSON.stringify([1, 2, 3]),
+  contentType: "application/json",
+  success: function (data) {
+    console.log(data); // 6
+  }
+});
+
+// Getting data from a publication
+$.get("/publications/widgets", function (data) {
+  console.log(data.widgets.length); // 11
+});
+```
 
 ### Listing all API methods
 

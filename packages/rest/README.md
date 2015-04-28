@@ -1,4 +1,10 @@
+Current status: pre-1.0 preview release.
+
 ## One-step JSON API for your publications and methods
+
+```sh
+meteor add simple:rest
+```
 
 Add this package to get an automatic JSON HTTP API for all of your Meteor app's publications and methods. It works with all of your existing security rules and authentication. This can be useful for many things:
 

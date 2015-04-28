@@ -200,7 +200,7 @@ JsonRoutes.setResponseHeaders({
 
 ### Authentication
 
-API endpoints generated with this package accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header).
+API endpoints generated with this package accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header)).
 
 ```http
 Authorization: Bearer <token>

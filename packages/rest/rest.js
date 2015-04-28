@@ -65,7 +65,6 @@ Meteor.publish = function (name, handler, options) {
 };
 
 var oldMethods = Object.getPrototypeOf(Meteor.server).methods;
-
 Meteor.method = function (name, handler, options) {
   options = options || {};
   var methodMap = {};
@@ -78,6 +77,10 @@ Meteor.method = function (name, handler, options) {
 
   var autoName = "methods" + name;
   var httpName = options.url || autoName;
+
+  JsonRoutes.add("options", httpName, function (req, res) {
+    JsonRoutes.sendResult(res, 200);
+  });
 
   JsonRoutes.add("post", httpName, function (req, res) {
     var token = getTokenFromRequest(req);
@@ -116,7 +119,7 @@ Meteor.method = function (name, handler, options) {
   });
 };
 
-Object.getPrototypeOf(Meteor.server).methods = function (methodMap) {
+Meteor.methods = Object.getPrototypeOf(Meteor.server).methods = function (methodMap) {
   _.each(methodMap, function (handler, name) {
     Meteor.method(name, handler);
   });
@@ -141,7 +144,7 @@ function getArgsFromRequest(methodScope) {
   var args = [];
   if (methodScope.method === "POST") {
     // by default, the request body is an array which is the arguments
-    args = methodScope.body;
+    args = EJSON.fromJSONValue(methodScope.body);
   }
 
   _.each(methodScope.params, function (value, name) {

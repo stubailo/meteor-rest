@@ -20,7 +20,8 @@ Package.onUse(function(api) {
     "webapp",
     "accounts-password",
     "simple:json-routes@1.0.1",
-    "minimongo"
+    "minimongo",
+    "ejson"
   ], "server");
 
   api.addFiles([

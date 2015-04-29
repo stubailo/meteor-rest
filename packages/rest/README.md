@@ -28,6 +28,7 @@ Check out the [example app](https://github.com/stubailo/simple-rest-examples).
   2. [Cross origin requests](#cross-origin-requests)
   3. [Authentication](#authentication)
   4. [Logging in over HTTP](#logging-in-over-http)
+3. [Change log](#change-log)
 
 ### Publications
 
@@ -222,3 +223,9 @@ This package allows you to authenticate API calls using a token, but does not pr
 
 - [`simple:rest-accounts-password`](https://github.com/stubailo/meteor-rest/blob/master/packages/rest-accounts-password/README.md)
 - More coming soon for login with Facebook, Google, etc
+
+## Change log
+
+#### 0.1.2
+
+Initial publicized release

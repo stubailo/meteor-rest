@@ -17,7 +17,7 @@ Package.onUse(function(api) {
   });
 
   api.export("JsonRoutes");
-  api.versionsFrom('1.1.0.2');
+  api.versionsFrom('1.0');
   api.addFiles('json-routes.js', "server");
 
   api.use([

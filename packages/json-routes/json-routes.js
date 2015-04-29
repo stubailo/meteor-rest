@@ -57,8 +57,9 @@ JsonRoutes.sendResult = function (res, code, json) {
   res.statusCode = code;
 
   if (json !== undefined) {
+    var spacer = process.env.NODE_ENV === 'development' ? 2 : null;
     res.setHeader("Content-type", "application/json");
-    res.write(JSON.stringify(json));
+    res.write(JSON.stringify(json, null, spacer));
   }
 
   res.end();

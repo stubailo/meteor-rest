@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:json-routes',
-  version: '1.0.1',
+  version: '1.0.2',
   // Brief, one-line summary of the package.
   summary: 'The simplest way to define server-side routes that return JSON',
   // URL to the Git repository containing the source code for this package.

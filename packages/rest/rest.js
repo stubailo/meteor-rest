@@ -13,9 +13,9 @@ Meteor.publish = function (name, handler, options) {
   // Register DDP publication
   oldPublish(name, handler, ddpOptions);
 
-  var httpName = httpOptions["url"] || "publications/" + name;
+  var url = httpOptions["url"] || "publications/" + name;
 
-  JsonRoutes.add("get", httpName, function (req, res) {
+  JsonRoutes.add("get", url, function (req, res) {
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -71,18 +71,77 @@ Meteor.method = function (name, handler, options) {
   methodMap[name] = handler;
   oldMethods.call(Meteor.server, methodMap);
 
+  // This is a default collection mutation method, do some special things to
+  // make it more RESTful
+  if (insideDefineMutationMethods) {
+    var collectionName = name.split("/")[1];
+    var modifier = name.split("/")[2];
+
+    var collectionUrl = "/" + collectionName;
+    var itemUrl = "/" + collectionName + "/:_id";
+
+    if (modifier === "insert") {
+      // Post the entire new document
+      addHTTPMethod("post", collectionUrl, handler);
+    } else if (modifier === "update") {
+      // PATCH means you submit an incomplete document, to update the fields
+      // you have passed
+      addHTTPMethod("patch", itemUrl, handler, {
+        getArgsFromRequest: function (req) {
+          return [{ _id: req.params._id }, { $set: req.body }];
+        }
+      });
+
+      // We don't have PUT because allow/deny doesn't let you replace documents
+      // you can define it manually if you want
+    } else if (modifier === "remove") {
+      // Can only remove a single document by the _id
+      addHTTPMethod("delete", itemUrl, handler, {
+        getArgsFromRequest: function (req) {
+          return [req.params._id];
+        }
+      });
+    }
+
+    return;
+  }
+
   if (name[0] !== "/") {
     name = "/" + name;
   }
-
   var autoName = "methods" + name;
-  var httpName = options.url || autoName;
+  var url = options.url || autoName;
 
-  JsonRoutes.add("options", httpName, function (req, res) {
+  addHTTPMethod("post", url, handler);
+};
+
+// Monkey patch _defineMutationMethods so that we can treat them specially
+// inside Meteor.method
+var insideDefineMutationMethods = false;
+var oldDMM = Mongo.Collection.prototype._defineMutationMethods;
+Mongo.Collection.prototype._defineMutationMethods = function () {
+  insideDefineMutationMethods = true;
+  oldDMM.apply(this, arguments);
+  insideDefineMutationMethods = false;
+};
+
+Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
+  function (methodMap) {
+    _.each(methodMap, function (handler, name) {
+      Meteor.method(name, handler);
+    });
+  };
+
+function addHTTPMethod(httpMethod, url, handler, options) {
+  var options = _.defaults(options || {}, {
+    getArgsFromRequest: getArgsFromRequest
+  });
+
+  JsonRoutes.add("options", url, function (req, res) {
     JsonRoutes.sendResult(res, 200);
   });
 
-  JsonRoutes.add("post", httpName, function (req, res) {
+  JsonRoutes.add(httpMethod, url, function (req, res) {
     var token = getTokenFromRequest(req);
     var userId;
     if (token) {
@@ -101,7 +160,7 @@ Meteor.method = function (name, handler, options) {
       }
     };
 
-    var handlerArgs = getArgsFromRequest(req);
+    var handlerArgs = options.getArgsFromRequest(req);
 
     try {
       var handlerReturn = handler.apply(methodInvocation, handlerArgs);
@@ -115,7 +174,7 @@ Meteor.method = function (name, handler, options) {
           details: error.details
         };
       } else {
-        console.log("Internal server error in " + httpName, error, error.stack);
+        console.log("Internal server error in " + url, error, error.stack);
         errorJson = {
           error: "internal-server-error",
           reason: "Internal server error"
@@ -124,14 +183,7 @@ Meteor.method = function (name, handler, options) {
       JsonRoutes.sendResult(res, 500, errorJson);
     }
   });
-};
-
-Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
-  function (methodMap) {
-    _.each(methodMap, function (handler, name) {
-      Meteor.method(name, handler);
-    });
-  };
+}
 
 function getTokenFromRequest(req) {
   if (req.headers.authorization) {

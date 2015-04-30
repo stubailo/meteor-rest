@@ -19,8 +19,8 @@ Package.onUse(function(api) {
     "meteor",
     "webapp",
     "simple:json-routes@1.0.1",
-    "minimongo",
-    "ejson"
+    "ejson",
+    "mongo"
   ], "server");
 
   api.use([

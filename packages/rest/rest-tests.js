@@ -84,12 +84,10 @@ if (Meteor.isServer) {
 
   Tinytest.add("routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
-      "/methods/widgets/insert",
-      "/methods/widgets/update",
-      "/methods/widgets/remove",
-      "/methods/doodles/insert",
-      "/methods/doodles/update",
-      "/methods/doodles/remove",
+      "/widgets",
+      "/widgets/:_id",
+      "/doodles",
+      "/doodles/:_id",
     ];
 
     _.each(mutatorMethodPaths, function (path) {
@@ -99,6 +97,9 @@ if (Meteor.isServer) {
 
   Widgets.allow({
     insert: function () {
+      return true;
+    },
+    update: function () {
       return true;
     },
     remove: function () {
@@ -207,7 +208,7 @@ if (Meteor.isServer) {
   var widgets = [];
   testAsyncMulti("mutator methods", [
     function (test, expect) {
-      HTTP.post("/methods/widgets/insert", { data: [{
+      HTTP.post("/widgets", { data: [{
         index: 10
       }] }, expect(function (err, res) {
         test.equal(err, null);
@@ -221,9 +222,24 @@ if (Meteor.isServer) {
       }));
     },
     function (test, expect) {
-      HTTP.post("/methods/widgets/remove", { data: [{
-        _id: _.values(widgets)[0]._id
-      }] }, expect(function (err) {
+      var _id = _.values(widgets)[0]._id;
+      HTTP.call("patch", "/widgets/" + _id, {
+        data: { specialKey: "Over 9000!" }
+      }, expect(function (err) {
+        test.equal(err, null);
+      }));
+    },
+    function (test, expect) {
+      HTTP.get("/publications/widgets", expect(function (err, res) {
+        test.equal(err, null);
+
+        // Make sure our special key was saved
+        test.isTrue(_.findWhere(res.data.widgets,
+          { specialKey: "Over 9000!" }));
+      }));
+    },
+    function (test, expect) {
+      HTTP.del("/widgets/" + _.values(widgets)[0]._id, expect(function (err) {
         test.equal(err.response.data.reason, "Access denied");
       }));
     }

@@ -6,7 +6,7 @@ Meteor.publish("api-routes", function () {
   paths = {};
 
   _.each(JsonRoutes.routes, function (route) {
-    pathInfo = paths[route.path] || { methods: [] };
+    pathInfo = paths[route.path] || { methods: [], path: route.path };
 
     pathInfo.methods.push(route.method);
 

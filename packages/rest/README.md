@@ -102,15 +102,30 @@ POST /return-five
 ### Collection methods
 
 The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 
-Don't worry, they follow the exact same security rules as in your Meteor DDP app, and allow/deny still works perfectly. Call them like this:
+Don't worry, they follow the exact same security rules as in your Meteor DDP app, and allow/deny still works perfectly.
 
+#### Inserting into a collection
 ```http
-POST /methods/<collection-name>/insert
-POST /methods/<collection-name>/update
-POST /methods/<collection-name>/remove
+POST /<collection-name>
 ```
 
-Pass arguments the same way as descibed in [methods](#methods) above.
+The body of the request should be a JSON-serialized document to insert into the database.
+
+#### Updating a document in a collection
+
+```http
+PATCH /<collection-name>/<_id>
+```
+
+The body of the request should be a JSON-serialized set of fields to update in the document.
+
+### Deleting a document from a collection
+
+```http
+DELETE /<collection-name>/<_id>
+```
+
+No request body is necessary for deletion, it just deletes the document with the specified `_id`.
 
 ### Example code with JQuery
 

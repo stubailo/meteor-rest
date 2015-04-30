@@ -17,11 +17,7 @@ Meteor.publish = function (name, handler, options) {
 
   JsonRoutes.add("get", url, function (req, res) {
     catchAndReportErrors(url, res, function () {
-      var token = getTokenFromRequest(req);
-      var userId;
-      if (token) {
-        userId = getUserIdFromToken(token);
-      }
+      var userId = getUserIdFromRequest(req);
 
       var httpSubscription = new HttpSubscription({
         request: req,
@@ -133,11 +129,7 @@ function addHTTPMethod(httpMethod, url, handler, options) {
 
   JsonRoutes.add(httpMethod, url, function (req, res) {
     catchAndReportErrors(url, res, function () {
-      var token = getTokenFromRequest(req);
-      var userId;
-      if (token) {
-        userId = getUserIdFromToken(token);
-      }
+      var userId = getUserIdFromRequest(req);
 
       // XXX replace with a real one?
       var methodInvocation = {
@@ -202,7 +194,7 @@ function hashToken(unhashedToken) {
   return hashStampedTokenReturn.hashedToken;
 }
 
-function getTokenFromRequest(req) {
+function getUserIdFromRequest(req) {
   if (! _.has(Package, "accounts-base")) {
     return null;
   }
@@ -219,14 +211,6 @@ function getTokenFromRequest(req) {
   var tokenExpires = Package["accounts-base"].Accounts._tokenExpiration(token.when);
   if (new Date() >= tokenExpires) {
     throw new Meteor.Error("token-expired", "Your login token has expired. Please log in again.");
-  }
-
-  return token;
-}
-
-function getUserIdFromToken(token) {
-  if (! _.has(Package, "accounts-base")) {
-    return null;
   }
 
   var user = Meteor.users.findOne({

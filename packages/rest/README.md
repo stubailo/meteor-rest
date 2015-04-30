@@ -239,6 +239,10 @@ This package allows you to authenticate API calls using a token, but does not pr
 
 ## Change log
 
+#### 0.2.1
+
+Start checking for token expirations.
+
 #### 0.2.0
 
 Changed api for insert/update/remove to be more RESTful. Now you call it with:

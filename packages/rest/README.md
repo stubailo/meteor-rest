@@ -255,4 +255,4 @@ DELETE /collection/:_id
 
 #### 0.1.2
 
-Initial publicized release
+Initial publicized release.

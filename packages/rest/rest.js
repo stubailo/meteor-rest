@@ -126,11 +126,12 @@ Meteor.method = function (name, handler, options) {
   });
 };
 
-Meteor.methods = Object.getPrototypeOf(Meteor.server).methods = function (methodMap) {
-  _.each(methodMap, function (handler, name) {
-    Meteor.method(name, handler);
-  });
-};
+Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
+  function (methodMap) {
+    _.each(methodMap, function (handler, name) {
+      Meteor.method(name, handler);
+    });
+  };
 
 function getTokenFromRequest(req) {
   if (req.headers.authorization) {

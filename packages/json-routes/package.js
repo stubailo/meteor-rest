@@ -10,12 +10,12 @@ Package.describe({
   documentation: 'README.md'
 });
 
-Package.onUse(function(api) {
-  Npm.depends({
-    connect: "2.11.0",
-    "connect-route": "0.1.5"
-  });
+Npm.depends({
+  connect: "2.11.0",
+  "connect-route": "0.1.5"
+});
 
+Package.onUse(function(api) {
   api.export("JsonRoutes");
   api.versionsFrom('1.0');
   api.addFiles('json-routes.js', "server");
@@ -28,6 +28,7 @@ Package.onUse(function(api) {
 
 Package.onTest(function(api) {
   api.use('tinytest');
+  api.use('test-helpers');
   api.use('simple:json-routes');
   api.addFiles('json-routes-tests.js');
 });

@@ -158,41 +158,50 @@ GET /publications/api-routes
 The result looks like:
 
 ```js
-{
-  "api-routes": [
-    {
-      "_id": "get /publications/api-routes",
-      "method": "get",
-      "path": "/publications/api-routes"
-    },
-    {
-      "_id": "options /users/login",
-      "method": "options",
-      "path": "/users/login"
-    },
-    {
-      "_id": "post /users/login",
-      "method": "post",
-      "path": "/users/login"
-    },
-    {
-      "_id": "options /users/register",
-      "method": "options",
-      "path": "/users/register"
-    },
-    {
-      "_id": "post /users/register",
-      "method": "post",
-      "path": "/users/register"
-    },
-    {
-      "_id": "options /methods/lists/insert",
-      "method": "options",
-      "path": "/methods/lists/insert"
-    },
-    ...
-  ]
-}
+{ "api-routes": [
+  {
+    "_id": "/users/login",
+    "methods": [
+      "options",
+      "post"
+    ],
+    "path": "/users/login"
+  },
+  {
+    "_id": "/users/register",
+    "methods": [
+      "options",
+      "post"
+    ],
+    "path": "/users/register"
+  },
+  {
+    "_id": "/publications/api-routes",
+    "methods": [
+      "get"
+    ],
+    "path": "/publications/api-routes"
+  },
+  {
+    "_id": "/widgets",
+    "methods": [
+      "options",
+      "post"
+    ],
+    "path": "/widgets"
+  },
+  {
+    "_id": "/widgets/:_id",
+    "methods": [
+      "options",
+      "patch",
+      "options",
+      "delete"
+    ],
+    "path": "/widgets/:_id"
+  },
+  ...
+] }
 ```
 
 > Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
@@ -255,4 +264,4 @@ DELETE /collection/:_id
 
 #### 0.1.2
 
-Initial publicized release.
+Initial publicized release.g

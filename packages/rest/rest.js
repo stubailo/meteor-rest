@@ -16,51 +16,41 @@ Meteor.publish = function (name, handler, options) {
   var url = httpOptions["url"] || "publications/" + name;
 
   JsonRoutes.add("get", url, function (req, res) {
-    var token = getTokenFromRequest(req);
-    var userId;
-    if (token) {
-      userId = getUserIdFromToken(token);
-    }
+    catchAndReportErrors(url, res, function () {
+      var token = getTokenFromRequest(req);
+      var userId;
+      if (token) {
+        userId = getUserIdFromToken(token);
+      }
 
-    var httpSubscription = new HttpSubscription({
-      request: req,
-      userId: userId
-    });
+      var httpSubscription = new HttpSubscription({
+        request: req,
+        userId: userId
+      });
 
-    httpSubscription.on("ready", function (response) {
-      JsonRoutes.sendResult(res, 200, response);
-    });
+      httpSubscription.on("ready", function (response) {
+        JsonRoutes.sendResult(res, 200, response);
+      });
 
-    httpSubscription.on("error", function (error) {
-      JsonRoutes.sendResult(res, 500, error);
-    });
+      var handlerArgs = getArgsFromRequest(req);
 
-    var handlerArgs = getArgsFromRequest(req);
+      var handlerReturn = handler.apply(httpSubscription, handlerArgs);
 
-    var handlerReturn = handler.apply(httpSubscription, handlerArgs);
-
-    // Fast track for publishing cursors - we don't even need livequery here,
-    // just making a normal DB query
-    if (handlerReturn && handlerReturn._publishCursor) {
-      try {
+      // Fast track for publishing cursors - we don't even need livequery here,
+      // just making a normal DB query
+      if (handlerReturn && handlerReturn._publishCursor) {
         httpPublishCursor(handlerReturn, httpSubscription);
         httpSubscription.ready();
-      } catch (e) {
-        httpSubscription.error(e);
-      }
-    } else if (handlerReturn && _.isArray(handlerReturn)) {
-      // We don't need to run the checks to see if the cursors overlap and stuff
-      // because calling Meteor.publish will do that for us :]
-      try {
+      } else if (handlerReturn && _.isArray(handlerReturn)) {
+        // We don't need to run the checks to see if the cursors overlap and stuff
+        // because calling Meteor.publish will do that for us :]
         _.each(handlerReturn, function (cursor) {
           httpPublishCursor(cursor, httpSubscription);
         });
 
         httpSubscription.ready();
-      } catch (e) {
-        httpSubscription.error(e);
       }
-    }
+    });
   });
 };
 
@@ -142,55 +132,30 @@ function addHTTPMethod(httpMethod, url, handler, options) {
   });
 
   JsonRoutes.add(httpMethod, url, function (req, res) {
-    var token = getTokenFromRequest(req);
-    var userId;
-    if (token) {
-      userId = getUserIdFromToken(token);
-    }
-
-    // XXX replace with a real one?
-    var methodInvocation = {
-      userId: userId,
-      setUserId: function () {
-        throw Error("setUserId not implemented in this version of simple:rest");
-      },
-      isSimulation: false,
-      unblock: function () {
-        // no-op
+    catchAndReportErrors(url, res, function () {
+      var token = getTokenFromRequest(req);
+      var userId;
+      if (token) {
+        userId = getUserIdFromToken(token);
       }
-    };
 
-    var handlerArgs = options.getArgsFromRequest(req);
+      // XXX replace with a real one?
+      var methodInvocation = {
+        userId: userId,
+        setUserId: function () {
+          throw Error("setUserId not implemented in this version of simple:rest");
+        },
+        isSimulation: false,
+        unblock: function () {
+          // no-op
+        }
+      };
 
-    try {
+      var handlerArgs = options.getArgsFromRequest(req);
       var handlerReturn = handler.apply(methodInvocation, handlerArgs);
       JsonRoutes.sendResult(res, 200, handlerReturn);
-    } catch (error) {
-      var errorJson;
-      if (error instanceof Meteor.Error) {
-        errorJson = {
-          error: error.error,
-          reason: error.reason,
-          details: error.details
-        };
-      } else {
-        console.log("Internal server error in " + url, error, error.stack);
-        errorJson = {
-          error: "internal-server-error",
-          reason: "Internal server error"
-        };
-      }
-      JsonRoutes.sendResult(res, 500, errorJson);
-    }
+    });
   });
-}
-
-function getTokenFromRequest(req) {
-  if (req.headers.authorization) {
-    return req.headers.authorization.split(" ")[1];
-  }
-
-  return null;
 }
 
 function httpPublishCursor(cursor, subscription) {
@@ -237,6 +202,28 @@ function hashToken(unhashedToken) {
   return hashStampedTokenReturn.hashedToken;
 }
 
+function getTokenFromRequest(req) {
+  if (! _.has(Package, "accounts-base")) {
+    return null;
+  }
+
+  // Looks like "Authorization: Bearer <token>"
+  var token = req.headers.authorization &&
+    req.headers.authorization.split(" ")[1];
+
+  if (! token) {
+    return null;
+  }
+
+  // Check token expiration
+  var tokenExpires = Package["accounts-base"].Accounts._tokenExpiration(token.when);
+  if (new Date() >= tokenExpires) {
+    throw new Meteor.Error("token-expired", "Your login token has expired. Please log in again.");
+  }
+
+  return token;
+}
+
 function getUserIdFromToken(token) {
   if (! _.has(Package, "accounts-base")) {
     return null;
@@ -250,5 +237,27 @@ function getUserIdFromToken(token) {
     return user._id;
   } else {
     return null;
+  }
+}
+
+function catchAndReportErrors(url, res, func) {
+  try {
+    return func();
+  } catch (error) {
+    var errorJson;
+    if (error instanceof Meteor.Error) {
+      errorJson = {
+        error: error.error,
+        reason: error.reason,
+        details: error.details
+      };
+    } else {
+      console.log("Internal server error in " + url, error, error.stack);
+      errorJson = {
+        error: "internal-server-error",
+        reason: "Internal server error"
+      };
+    }
+    JsonRoutes.sendResult(res, 500, errorJson);
   }
 }

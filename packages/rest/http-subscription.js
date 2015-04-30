@@ -67,18 +67,7 @@ _.extend(HttpSubscription.prototype, {
     // no-op in HTTP
   },
   error: function (error) {
-    if (error instanceof Meteor.Error) {
-      this.emit("error", {
-        error: error.error,
-        reason: error.reason,
-        details: error.details
-      });
-    } else {
-      this.emit("error", {
-        error: "internal-server-error",
-        reason: "Internal server error"
-      });
-    }
+    throw error;
   },
   _ensureCollectionInRes: function (collection) {
     this.responseData[collection] = this.responseData[collection] || {};

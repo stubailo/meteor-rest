@@ -119,7 +119,7 @@ PATCH /<collection-name>/<_id>
 
 The body of the request should be a JSON-serialized set of fields to update in the document.
 
-### Deleting a document from a collection
+#### Deleting a document from a collection
 
 ```http
 DELETE /<collection-name>/<_id>

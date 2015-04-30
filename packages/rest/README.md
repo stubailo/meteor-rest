@@ -241,6 +241,16 @@ This package allows you to authenticate API calls using a token, but does not pr
 
 ## Change log
 
+#### 0.2.0
+
+Changed api for insert/update/remove to be more RESTful. Now you call it with:
+
+```http
+POST /collection
+PATCH /collection/:_id
+DELETE /collection/:_id
+```
+
 #### 0.1.2
 
 Initial publicized release

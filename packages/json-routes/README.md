@@ -50,3 +50,14 @@ Set the headers returned by `JsonRoutes.sendResult`. Default value is:
   "Pragma": "no-cache"
 }
 ```
+
+## MiddleWare
+
+If you want to insert connect middleware and ensure that it runs before your REST route is hit, use `JsonRoutes.middleWare`.
+
+```js
+JsonRoutes.middleWare.use(function (req, res, next) {
+  console.log(req.body);
+  next();
+});
+```

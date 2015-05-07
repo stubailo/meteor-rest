@@ -97,6 +97,8 @@ Then you can call this method with:
 POST /return-five
 ```
 
+You can optionally pass a `getArgsFromRequest` option set to a function that accepts the `request` object and uses it to return the arguments array for your method. By default, simple:rest expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
+
 ### Collection methods
 
 The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 

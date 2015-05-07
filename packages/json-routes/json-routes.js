@@ -7,6 +7,9 @@ JsonRoutes = {};
 WebApp.rawConnectHandlers.use(connect.bodyParser());
 WebApp.rawConnectHandlers.use(connect.query());
 
+JsonRoutes.middleWare = connect();
+WebApp.rawConnectHandlers.use(JsonRoutes.middleWare);
+
 // List of all defined JSON API endpoints
 JsonRoutes.routes = [];
 

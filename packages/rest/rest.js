@@ -13,7 +13,7 @@ Meteor.publish = function (name, handler, options) {
   // Register DDP publication
   oldPublish(name, handler, ddpOptions);
 
-  var url = httpOptions["url"] || "publications/" + name;
+  var url = httpOptions.url || "publications/" + name;
 
   JsonRoutes.add("get", url, function (req, res) {
     catchAndReportErrors(url, res, function () {
@@ -98,7 +98,7 @@ Meteor.method = function (name, handler, options) {
   var autoName = "methods" + name;
   var url = options.url || autoName;
 
-  addHTTPMethod("post", url, handler);
+  addHTTPMethod("post", url, handler, options);
 };
 
 // Monkey patch _defineMutationMethods so that we can treat them specially
@@ -119,7 +119,7 @@ Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
   };
 
 function addHTTPMethod(httpMethod, url, handler, options) {
-  var options = _.defaults(options || {}, {
+  options = _.defaults(options || {}, {
     getArgsFromRequest: getArgsFromRequest
   });
 
@@ -157,14 +157,19 @@ function httpPublishCursor(cursor, subscription) {
   });
 }
 
-function getArgsFromRequest(methodScope) {
+function getArgsFromRequest(req) {
   var args = [];
-  if (methodScope.method === "POST") {
+  if (req.method === "POST") {
     // by default, the request body is an array which is the arguments
-    args = EJSON.fromJSONValue(methodScope.body);
+    args = EJSON.fromJSONValue(req.body);
+
+    // If it's an object, pass the entire object as the only argument
+    if (! _.isArray(args)) {
+      args = [args];
+    }
   }
 
-  _.each(methodScope.params, function (value, name) {
+  _.each(req.params, function (value, name) {
     var parsed = parseInt(name, 10);
 
     if (_.isNaN(parsed)) {
@@ -235,6 +240,12 @@ function catchAndReportErrors(url, res, func) {
         reason: error.reason,
         details: error.details
       };
+    } else if (error.sanitizedError instanceof Meteor.Error) {
+      errorJson = {
+        error: error.sanitizedError.error,
+        reason: error.sanitizedError.reason,
+        details: error.sanitizedError.details
+      };
     } else {
       console.log("Internal server error in " + url, error, error.stack);
       errorJson = {
@@ -242,6 +253,12 @@ function catchAndReportErrors(url, res, func) {
         reason: "Internal server error"
       };
     }
-    JsonRoutes.sendResult(res, 500, errorJson);
+
+    var code = 500;
+    if (errorJson.error === +errorJson.error) {
+      code = errorJson.error;
+    }
+
+    JsonRoutes.sendResult(res, code, errorJson);
   }
 }

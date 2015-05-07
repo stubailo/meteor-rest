@@ -51,7 +51,7 @@ Set the headers returned by `JsonRoutes.sendResult`. Default value is:
 }
 ```
 
-## MiddleWare
+## Adding middlewares
 
 If you want to insert connect middleware and ensure that it runs before your REST route is hit, use `JsonRoutes.middleWare`.
 
@@ -61,3 +61,9 @@ JsonRoutes.middleWare.use(function (req, res, next) {
   next();
 });
 ```
+
+## Change log
+
+#### 1.0.3
+
+Add `JsonRoutes.middleWare`

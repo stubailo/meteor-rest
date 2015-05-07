@@ -4,7 +4,8 @@ Meteor.publish = function (name, handler, options) {
   options = options || {};
 
   var httpOptionKeys = [
-    "url"
+    "url",
+    "getArgsFromRequest"
   ];
 
   var httpOptions = _.pick(options, httpOptionKeys);
@@ -13,10 +14,13 @@ Meteor.publish = function (name, handler, options) {
   // Register DDP publication
   oldPublish(name, handler, ddpOptions);
 
-  var url = httpOptions.url || "publications/" + name;
+  _.defaults(httpOptions, {
+    url: "publications/" + name,
+    getArgsFromRequest: defaultGetArgsFromRequest
+  });
 
-  JsonRoutes.add("get", url, function (req, res) {
-    catchAndReportErrors(url, res, function () {
+  JsonRoutes.add("get", httpOptions.url, function (req, res) {
+    catchAndReportErrors(httpOptions.url, res, function () {
       var userId = getUserIdFromRequest(req);
 
       var httpSubscription = new HttpSubscription({
@@ -28,7 +32,7 @@ Meteor.publish = function (name, handler, options) {
         JsonRoutes.sendResult(res, 200, response);
       });
 
-      var handlerArgs = getArgsFromRequest(req);
+      var handlerArgs = httpOptions.getArgsFromRequest(req);
 
       var handlerReturn = handler.apply(httpSubscription, handlerArgs);
 
@@ -120,7 +124,7 @@ Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
 
 function addHTTPMethod(httpMethod, url, handler, options) {
   options = _.defaults(options || {}, {
-    getArgsFromRequest: getArgsFromRequest
+    getArgsFromRequest: defaultGetArgsFromRequest
   });
 
   JsonRoutes.add("options", url, function (req, res) {
@@ -157,7 +161,7 @@ function httpPublishCursor(cursor, subscription) {
   });
 }
 
-function getArgsFromRequest(req) {
+function defaultGetArgsFromRequest(req) {
   var args = [];
   if (req.method === "POST") {
     // by default, the request body is an array which is the arguments

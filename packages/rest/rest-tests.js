@@ -56,6 +56,14 @@ if (Meteor.isServer) {
     url: "widgets-with-index-above/:0"
   });
 
+  Meteor.publish("widgets-above-index-custom-args", function (index) {
+    return Widgets.find({index: {$gt: parseInt(index, 10)}});
+  }, {
+    getArgsFromRequest: function (request) {
+      return [ parseInt(request.query.index, 10) ];
+    }
+  });
+
   Meteor.publish("widgets-authorized", function () {
     if (this.userId) {
       return Widgets.find();
@@ -163,6 +171,16 @@ if (Meteor.isServer) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 5);
       }));
+    }
+  ]);
+
+  testAsyncMulti("getting a publication with query arguments", [
+    function (test, expect) {
+      HTTP.get("/publications/widgets-above-index-custom-args?index=4",
+        expect(function (err, res) {
+          test.equal(err, null);
+          test.equal(_.size(res.data.widgets), 5);
+        }));
     }
   ]);
 

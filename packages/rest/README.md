@@ -14,6 +14,9 @@ Add this package to get an automatic JSON HTTP API for all of your Meteor app's 
 
 Keep in mind that this package is _literally_ calling your Meteor methods and publications. This means if you have any nice packages that do roles, authentication, permissions, etc. for your app, those packages should still work just fine over HTTP.
 
+For a lot of examples of how to define and call methods and publications, see
+the [unit tests in this package](rest-tests.js).
+
 ### Table of contents
 
 1. Using the API

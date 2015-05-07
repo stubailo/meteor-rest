@@ -255,7 +255,7 @@ function catchAndReportErrors(url, res, func) {
     }
 
     var code = 500;
-    if (errorJson.error === +errorJson.error) {
+    if (_.isNumber(errorJson.error)) {
       code = errorJson.error;
     }
 

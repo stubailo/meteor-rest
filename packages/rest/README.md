@@ -97,7 +97,24 @@ Then you can call this method with:
 POST /return-five
 ```
 
-You can optionally pass a `getArgsFromRequest` option set to a function that accepts the `request` object and uses it to return the arguments array for your method. By default, simple:rest expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
+`Meteor.method` can also take a `getArgsFromRequest` option, which should be a function that accepts a [Node `request` object](https://nodejs.org/api/http.html#http_http_incomingmessage) and returns an array which will be passed as arguments to your method. If this option is not passed, `simple:rest` expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
+
+```js
+Meteor.method("add-numbers", function (a, b) {
+  return a + b;
+}, {
+  url: "add-numbers",
+  getArgsFromRequest: function (request) {
+    // Let's say we want this function to accept a form-encoded request with
+    // fields named `a` and `b`.
+    var content = request.body;
+
+    // Since form enconding doesn't distinguish numbers and strings, we need
+    // to parse it manually
+    return [ parseInt(content.a, 10), parseInt(content.b, 10) ];
+  }
+})
+```
 
 ### Collection methods
 

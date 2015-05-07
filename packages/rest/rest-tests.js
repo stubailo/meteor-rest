@@ -82,6 +82,18 @@ if (Meteor.isServer) {
     return a + b + c;
   });
 
+  Meteor.method("add-arguments-from-url", function (a, b) {
+    return a + b;
+  }, {
+    url: "/add-arguments-from-url/:a/:b",
+    getArgsFromRequest: function (request) {
+      var a = request.params.a;
+      var b = request.params.b;
+
+      return [ parseInt(a, 10), parseInt(b, 10) ];
+    }
+  })
+
   Tinytest.add("routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
       "/widgets",
@@ -255,6 +267,19 @@ if (Meteor.isServer) {
         contentType: "application/json",
         success: expect(function (data) {
           test.equal(data, 6);
+        })
+      });
+    }
+  ]);
+
+  // Some tests with JQuery as well
+  testAsyncMulti("calling method with JQuery with custom getArgsFromRequest", [
+    function (test, expect) {
+      $.ajax({
+        method: "post",
+        url: "/add-arguments-from-url/2/3",
+        success: expect(function (data) {
+          test.equal(data, 5);
         })
       });
     }

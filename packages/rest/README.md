@@ -267,6 +267,11 @@ This package allows you to authenticate API calls using a token, but does not pr
 
 ## Change log
 
+#### 0.2.2
+
+- Add `getArgsFromRequest` option to `Meteor.method` and `Meteor.publish`.
+- Improved error handling to better match DDP error handling
+
 #### 0.2.1
 
 Start checking for token expirations.

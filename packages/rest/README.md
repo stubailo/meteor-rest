@@ -102,6 +102,7 @@ Meteor.method("return-five", function () {
 
 - `url`: Define a custom URL for this method.
 - `getArgsFromRequest`: A function that accepts a [Node `request` object](https://nodejs.org/api/http.html#http_http_incomingmessage) and returns an array which will be passed as arguments to your method. If this option is not passed, `simple:rest` expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
+- `httpMethod`: Set the HTTP method which must be used when calling this API endpoint. The default is `"post"`.
 
 ```js
 Meteor.method("add-numbers", function (a, b) {

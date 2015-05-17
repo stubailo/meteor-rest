@@ -47,7 +47,8 @@ if (Meteor.isServer) {
   Meteor.publish("widgets-custom-url", function () {
     return Widgets.find();
   }, {
-    url: "i-love-widgets"
+    url: "i-love-widgets",
+    httpMethod: "post"
   });
 
   Meteor.publish("widgets-above-index", function (index) {
@@ -99,7 +100,8 @@ if (Meteor.isServer) {
       var b = request.params.b;
 
       return [ parseInt(a, 10), parseInt(b, 10) ];
-    }
+    },
+    httpMethod: "get"
   })
 
   Tinytest.add("routes exist for mutator methods", function (test) {
@@ -158,7 +160,7 @@ if (Meteor.isServer) {
 
   testAsyncMulti("getting a publication with custom URL", [
     function (test, expect) {
-      HTTP.get("/i-love-widgets", expect(function (err, res) {
+      HTTP.post("/i-love-widgets", expect(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
@@ -294,7 +296,7 @@ if (Meteor.isServer) {
   testAsyncMulti("calling method with JQuery with custom getArgsFromRequest", [
     function (test, expect) {
       $.ajax({
-        method: "post",
+        method: "get",
         url: "/add-arguments-from-url/2/3",
         success: expect(function (data) {
           test.equal(data, 5);

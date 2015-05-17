@@ -270,6 +270,12 @@ This package allows you to authenticate API calls using a token, but does not pr
 
 ## Change log
 
+#### 0.2.3
+
+- Add `httpMethod` option to `Meteor.method` and `Meteor.publish`. With it, you
+can make a method callable via `GET` or a publication via `POST`, or anything
+else.
+
 #### 0.2.2
 
 - Add `getArgsFromRequest` option to `Meteor.method` and `Meteor.publish`.

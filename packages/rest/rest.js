@@ -5,7 +5,8 @@ Meteor.publish = function (name, handler, options) {
 
   var httpOptionKeys = [
     "url",
-    "getArgsFromRequest"
+    "getArgsFromRequest",
+    "httpMethod"
   ];
 
   var httpOptions = _.pick(options, httpOptionKeys);
@@ -16,10 +17,11 @@ Meteor.publish = function (name, handler, options) {
 
   _.defaults(httpOptions, {
     url: "publications/" + name,
-    getArgsFromRequest: defaultGetArgsFromRequest
+    getArgsFromRequest: defaultGetArgsFromRequest,
+    httpMethod: "get"
   });
 
-  JsonRoutes.add("get", httpOptions.url, function (req, res) {
+  JsonRoutes.add(httpOptions.httpMethod, httpOptions.url, function (req, res) {
     catchAndReportErrors(httpOptions.url, res, function () {
       var userId = getUserIdFromRequest(req);
 
@@ -57,6 +59,13 @@ Meteor.publish = function (name, handler, options) {
 var oldMethods = Object.getPrototypeOf(Meteor.server).methods;
 Meteor.method = function (name, handler, options) {
   options = options || {};
+
+  _.defaults(options, {
+    url: "methods/" + name,
+    getArgsFromRequest: defaultGetArgsFromRequest,
+    httpMethod: "post"
+  });
+
   var methodMap = {};
   methodMap[name] = handler;
   oldMethods.call(Meteor.server, methodMap);
@@ -96,13 +105,7 @@ Meteor.method = function (name, handler, options) {
     return;
   }
 
-  if (name[0] !== "/") {
-    name = "/" + name;
-  }
-  var autoName = "methods" + name;
-  var url = options.url || autoName;
-
-  addHTTPMethod("post", url, handler, options);
+  addHTTPMethod(options.httpMethod, options.url, handler, options);
 };
 
 // Monkey patch _defineMutationMethods so that we can treat them specially

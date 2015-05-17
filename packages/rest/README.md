@@ -50,20 +50,24 @@ The response is an object where the keys are the collections in the publication,
 }
 ```
 
-You can pass an option to `Meteor.publish` to set a custom URL, which can contain parameters. The parameters are in the form `:argument-number`, so in this case `:0` means that segment of the URL will be passed as the first argument. Note that the arguments are _always_ strings, so you might need to parse to get an integer if you are expecting one.
+#### Options for Meteor.publish added by this package
+
+- `url`: Set a custom URL, which can contain parameters. The parameters are in the form `:argument-number`, so in this case `:0` means that segment of the URL will be passed as the first argument. Note that URL arguments are _always_ strings, so you might need to parse to get an integer if you are expecting one.
+- `httpMethod`: Pick the HTTP method that must be used when calling this endpoint. The default is `"get"`.
 
 ```js
 Meteor.publish("widgets-above-index", function (index) {
   return Widgets.find({index: {$gt: parseInt(index, 10)}});
 }, {
-  url: "widgets-with-index-above/:0"
+  url: "widgets-with-index-above/:0",
+  httpMethod: "post"
 });
 ```
 
-Call the above API with:
+Call the above publication with:
 
 ```http
-GET /widgets-with-index-above/4
+POST /widgets-with-index-above/4
 ```
 
 ### Methods
@@ -84,23 +88,20 @@ HTTP.post("/methods/addNumbers", {
 });
 ```
 
-You can pass a custom URL to a method by using an alternate method definition syntax that comes from this package, `Meteor.method`:
+#### Passing options about a method
+
+To pass options about your method's HTTP endpoint, you need to use an alternate method definition syntax that comes from this package – `Meteor.method` — that takes an options object as its last argument:
 
 ```js
 Meteor.method("return-five", function () {
   return 5;
-}, {
-  url: "return-five"
-});
+}, options);
 ```
 
-Then you can call this method with:
+#### Available options
 
-```http
-POST /return-five
-```
-
-`Meteor.method` can also take a `getArgsFromRequest` option, which should be a function that accepts a [Node `request` object](https://nodejs.org/api/http.html#http_http_incomingmessage) and returns an array which will be passed as arguments to your method. If this option is not passed, `simple:rest` expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
+- `url`: Define a custom URL for this method.
+- `getArgsFromRequest`: A function that accepts a [Node `request` object](https://nodejs.org/api/http.html#http_http_incomingmessage) and returns an array which will be passed as arguments to your method. If this option is not passed, `simple:rest` expects that the request body is a JSON array that maps to the method arguments, or a single JSON object that is passed as the only argument to the method.
 
 ```js
 Meteor.method("add-numbers", function (a, b) {

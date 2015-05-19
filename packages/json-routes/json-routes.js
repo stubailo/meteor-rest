@@ -55,15 +55,60 @@ var setHeaders = function (res) {
   });
 };
 
+var defaultConfig = {
+  prettyPrintResponses: false
+};
+
+var config = defaultConfig;
+JsonRoutes.config = function (userConfig) {
+  config = _.extend({}, defaultConfig, userConfig);
+};
+
+/**
+ * Sets the response headers, status code, and body, and ends it. The JSON response will be pretty printed if NODE_ENV is `development` or if you have configured `prettyPrintResponses: true`.
+ * @param {Object}   res  Response object
+ * @param {Number}   code HTTP status code. If `json` argument is an `Error` object, this will be overwritten based on the error.
+ * @param {Object|Array|null|undefined|Error} json The object to stringify as the response. If `null`, the response will be "null". If `undefined`, there will be no response body. If an `Error` type, a JSON representation of the error details will be sent.
+ */
 JsonRoutes.sendResult = function (res, code, json) {
   setHeaders(res);
+
+  // Convert `Error` objects to JSON representations
+  if (json) {
+    if (json instanceof Meteor.Error) {
+      json = {
+        error: json.error,
+        reason: json.reason,
+        details: json.details
+      };
+      code = _.isNumber(json.error) ? json.error : 400;
+    } else if (json.sanitizedError instanceof Meteor.Error) {
+      json = {
+        error: json.sanitizedError.error,
+        reason: json.sanitizedError.reason,
+        details: json.sanitizedError.details
+      };
+      code = _.isNumber(json.error) ? json.error : 400;
+    } else if (json instanceof Error) {
+      json = {
+        error: "internal-server-error",
+        reason: "Internal server error"
+      };
+      code = 500;
+    }
+  }
+
+  // Set status code on response
   res.statusCode = code;
 
+  // Set response body
   if (json !== undefined) {
-    var spacer = process.env.NODE_ENV === 'development' ? 2 : null;
+    var shouldPrettyPrint = (config.prettyPrintResponses || process.env.NODE_ENV === 'development');
+    var spacer = shouldPrettyPrint ? 2 : null;
     res.setHeader("Content-type", "application/json");
     res.write(JSON.stringify(json, null, spacer));
   }
 
+  // Send the response
   res.end();
 };

@@ -36,19 +36,31 @@ Return data fom a route.
 
 - `response` - the Node response object you got as an argument to your handler
 function.
-- `code` - the status code to send. `200` for OK, `500` for internal error, etc.
-- `data` - the data you want to send back, will be sent as serialized JSON with
-content type `application/json`.
+- `code` - the status code to send. `200` for OK, `500` for internal error, etc. If the `data` argument is an `Error` type, this is overwritten based on the error.
+- `data` - the data you want to send back. This is serialized to JSON with
+content type `application/json`. If `undefined`, there will be no response body. If an `Error` type, a JSON representation of the error details will be sent.
 
 ### JsonRoutes.setResponseHeaders(headerObj)
 
-Set the headers returned by `JsonRoutes.sendResult`. Default value is:
+Set the headers used by `JsonRoutes.sendResult` for the response. Default value is:
 
 ```js
 {
   "Cache-Control": "no-store",
   "Pragma": "no-cache"
 }
+```
+
+### JsonRoutes.config(configObj)
+
+Configure global JsonRoutes options. Currently only one option is supported:
+
+```js
+JsonRoutes.config({
+  // By default, responses are pretty printed in development environments only.
+  // Set this to `true` to pretty print always.
+  prettyPrintResponses: true
+});
 ```
 
 ## Adding middlewares
@@ -63,6 +75,11 @@ JsonRoutes.middleWare.use(function (req, res, next) {
 ```
 
 ## Change log
+
+#### vNext
+
+- Add ability for `data` argument of `sendResult` to be an `Error`
+- Add `JsonRoutes.config` and ability to force pretty printing of all responses
 
 #### 1.0.3
 

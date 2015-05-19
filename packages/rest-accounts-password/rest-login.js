@@ -54,10 +54,8 @@ JsonRoutes.add("post", "/users/login", function (req, res) {
       tokenExpires: tokenExpiration
     });
   } catch (err) {
-    var errJson = convertErrorToJson(err);
     console.log("Error in login: ", err);
-
-    JsonRoutes.sendResult(res, 500, errJson);
+    JsonRoutes.sendResult(res, null, err);
   }
 });
 
@@ -98,30 +96,7 @@ JsonRoutes.add("post", "/users/register", function (req, res) {
       id: userId
     });
   } catch (err) {
-    var errJson = convertErrorToJson(err);
     console.log("Error in registration: ", err);
-
-    JsonRoutes.sendResult(res, 500, errJson);
+    JsonRoutes.sendResult(res, null, err);
   }
 });
-
-// Just like in DDP, send a sanitized error over HTTP
-function convertErrorToJson(err) {
-  if (err.sanitizedError) {
-    var sE = err.sanitizedError;
-    return {
-      error: sE.error,
-      reason: sE.reason
-    };
-  } else if (err.errorType === "Meteor.Error") {
-    return {
-      error: err.error,
-      reason: err.reason
-    };
-  } else {
-    return {
-      error: "internal-server-error",
-      reason: "Internal server error."
-    };
-  }
-}

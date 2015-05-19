@@ -240,32 +240,6 @@ function catchAndReportErrors(url, res, func) {
   try {
     return func();
   } catch (error) {
-    var errorJson;
-    if (error instanceof Meteor.Error) {
-      errorJson = {
-        error: error.error,
-        reason: error.reason,
-        details: error.details
-      };
-    } else if (error.sanitizedError instanceof Meteor.Error) {
-      errorJson = {
-        error: error.sanitizedError.error,
-        reason: error.sanitizedError.reason,
-        details: error.sanitizedError.details
-      };
-    } else {
-      console.log("Internal server error in " + url, error, error.stack);
-      errorJson = {
-        error: "internal-server-error",
-        reason: "Internal server error"
-      };
-    }
-
-    var code = 500;
-    if (_.isNumber(errorJson.error)) {
-      code = errorJson.error;
-    }
-
-    JsonRoutes.sendResult(res, code, errorJson);
+    JsonRoutes.sendResult(res, null, error);
   }
 }

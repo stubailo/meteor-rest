@@ -64,6 +64,34 @@ JsonRoutes.config = function (userConfig) {
   config = _.extend({}, defaultConfig, userConfig);
 };
 
+// Convert `Error` objects to JSON representations
+JsonRoutes._errorToJson = function (json) {
+  if (!json) {
+    return json;
+  }
+
+  if (json instanceof Meteor.Error) {
+    json = {
+      error: json.error,
+      reason: json.reason,
+      details: json.details
+    };
+  } else if (json.sanitizedError instanceof Meteor.Error) {
+    json = {
+      error: json.sanitizedError.error,
+      reason: json.sanitizedError.reason,
+      details: json.sanitizedError.details
+    };
+  } else if (json instanceof Error) {
+    json = {
+      error: "internal-server-error",
+      reason: "Internal server error"
+    };
+  }
+
+  return json;
+};
+
 /**
  * Sets the response headers, status code, and body, and ends it. The JSON response will be pretty printed if NODE_ENV is `development` or if you have configured `prettyPrintResponses: true`.
  * @param {Object}   res  Response object
@@ -74,27 +102,14 @@ JsonRoutes.sendResult = function (res, code, json) {
   setHeaders(res);
 
   // Convert `Error` objects to JSON representations
-  if (json) {
-    if (json instanceof Meteor.Error) {
-      json = {
-        error: json.error,
-        reason: json.reason,
-        details: json.details
-      };
-      code = _.isNumber(json.error) ? json.error : 400;
-    } else if (json.sanitizedError instanceof Meteor.Error) {
-      json = {
-        error: json.sanitizedError.error,
-        reason: json.sanitizedError.reason,
-        details: json.sanitizedError.details
-      };
-      code = _.isNumber(json.error) ? json.error : 400;
-    } else if (json instanceof Error) {
-      json = {
-        error: "internal-server-error",
-        reason: "Internal server error"
-      };
+  json = JsonRoutes._errorToJson(json);
+
+  // Override code for errors
+  if (json && json.error) {
+    if (json.error === "internal-server-error") {
       code = 500;
+    } else {
+      code = _.isNumber(json.error) ? json.error : 400;
     }
   }
 

@@ -81,6 +81,42 @@ if (Meteor.isServer) {
       }));
     },
 
+    // Test bug fix in #21
+    // The issue was if you had two accounts with empty emails, the first would
+    // always be selected.
+    function (test, expect) {
+      HTTP.post(registerEndpoint, { data: {
+        username: "seconduser",
+        password: "test"
+      } }, expect(function (err, res) {
+        if (err) { throw err; }
+      }));
+    },
+
+    function (test, expect) {
+      HTTP.post(registerEndpoint, { data: {
+        username: "thirduser",
+        password: "test"
+      } }, expect(function (err, res) {
+        if (err) { throw err; }
+
+        userId = res.data.id;
+      }));
+    },
+
+    function (test, expect) {
+      HTTP.post(loginEndpoint, { data: {
+        username: "thirduser",
+        password: "test"
+      } }, expect(function (err, res) {
+        // Make sure there is no error
+        test.equal(err, null);
+
+        // Make sure we logged into the right user
+        test.equal(res.data.id, userId);
+      }));
+    },
+
     // Test registering with an existing username or email
     function (test, expect) {
 

@@ -67,6 +67,7 @@ JsonRoutes.middleWare.use(function (req, res, next) {
 #### vNext
 
 - Add ability for `data` argument of `sendResult` to be an `Error`
+- Catch handler errors and automatically send a response. Look for `statusCode` and `jsonResponse` properties on thrown errors.
 
 #### 1.0.3
 

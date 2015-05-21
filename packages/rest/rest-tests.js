@@ -87,6 +87,10 @@ if (Meteor.isServer) {
     }
   });
 
+  Meteor.method("status-code", function () {
+    this.setStatusCode(222);
+  });
+
   Meteor.method("throws-error", function () {
     throw new Error('Bad');
   });
@@ -342,6 +346,15 @@ if (Meteor.isServer) {
         test.isTrue(!!err);
         test.equal(res.data.ding, "dong");
         test.equal(res.statusCode, 499);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method status code", [
+    function (test, expect) {
+      HTTP.post("/methods/status-code", expect(function (err, res) {
+        test.isFalse(!!err);
+        test.equal(res.statusCode, 222);
       }));
     }
   ]);

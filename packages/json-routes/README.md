@@ -51,18 +51,6 @@ Set the headers used by `JsonRoutes.sendResult` for the response. Default value 
 }
 ```
 
-### JsonRoutes.config(configObj)
-
-Configure global JsonRoutes options. Currently only one option is supported:
-
-```js
-JsonRoutes.config({
-  // By default, responses are pretty printed in development environments only.
-  // Set this to `true` to pretty print always.
-  prettyPrintResponses: true
-});
-```
-
 ## Adding middlewares
 
 If you want to insert connect middleware and ensure that it runs before your REST route is hit, use `JsonRoutes.middleWare`.
@@ -79,7 +67,6 @@ JsonRoutes.middleWare.use(function (req, res, next) {
 #### vNext
 
 - Add ability for `data` argument of `sendResult` to be an `Error`
-- Add `JsonRoutes.config` and ability to force pretty printing of all responses
 
 #### 1.0.3
 

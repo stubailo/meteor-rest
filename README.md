@@ -13,3 +13,9 @@ A set of packages that makes it easy to make your Meteor app's data accessible o
 - `simple:rest-accounts-facebook`, etc - OAuth login packages for HTTP
 - Static file management, authentication
 - Integration with [Restivus](https://github.com/kahmali/meteor-restivus) for custom API needs
+
+## Contributing
+
+1. Don't bump the version of the package in your PR - I'll do it myself :)
+2. Please split up unrelated changes into different PRs, so that they can be
+discussed independently.

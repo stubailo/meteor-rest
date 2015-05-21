@@ -36,3 +36,10 @@ Both login and registration have the same response format.
   reason: "Human readable error string"
 }
 ```
+
+### Change log
+
+#### 1.0.3
+
+- Fixed bug where logging into accounts with no email would log into the wrong
+account.

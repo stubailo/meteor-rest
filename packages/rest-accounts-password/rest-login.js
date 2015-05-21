@@ -5,21 +5,20 @@ JsonRoutes.add("options", "/users/login", function (req, res) {
 JsonRoutes.add("post", "/users/login", function (req, res) {
   var options = req.body;
 
-  check(options, {
-    email: Match.Optional(String),
-    username: Match.Optional(String),
-    password: String
-  });
-
-  // Look up a user that has the username passed in, or has an email with the
-  // given address in their emails array. (Note that "email.address" is querying
-  // an array field)
-  var user = Meteor.users.findOne({
-    $or: [
-      { username: options.username },
-      { "emails.address": options.email }
-    ]
-  });
+  var user;
+  if( options.hasOwnProperty("email") ) {
+    check(options, {
+      email: String,
+      password: String
+    });
+    user = Meteor.users.findOne({ "emails.address": options.email });
+  } else {
+    check(options, {
+      username: String,
+      password: String
+    });
+    user = Meteor.users.findOne({ username: options.username });
+  }
 
   if (! user) {
     throw new Meteor.Error("not-found",

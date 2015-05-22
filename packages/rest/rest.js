@@ -22,37 +22,35 @@ Meteor.publish = function (name, handler, options) {
   });
 
   JsonRoutes.add(httpOptions.httpMethod, httpOptions.url, function (req, res) {
-    catchAndReportErrors(httpOptions.url, res, function () {
-      var userId = getUserIdFromRequest(req);
+    var userId = getUserIdFromRequest(req);
 
-      var httpSubscription = new HttpSubscription({
-        request: req,
-        userId: userId
-      });
-
-      httpSubscription.on("ready", function (response) {
-        JsonRoutes.sendResult(res, 200, response);
-      });
-
-      var handlerArgs = httpOptions.getArgsFromRequest(req);
-
-      var handlerReturn = handler.apply(httpSubscription, handlerArgs);
-
-      // Fast track for publishing cursors - we don't even need livequery here,
-      // just making a normal DB query
-      if (handlerReturn && handlerReturn._publishCursor) {
-        httpPublishCursor(handlerReturn, httpSubscription);
-        httpSubscription.ready();
-      } else if (handlerReturn && _.isArray(handlerReturn)) {
-        // We don't need to run the checks to see if the cursors overlap and stuff
-        // because calling Meteor.publish will do that for us :]
-        _.each(handlerReturn, function (cursor) {
-          httpPublishCursor(cursor, httpSubscription);
-        });
-
-        httpSubscription.ready();
-      }
+    var httpSubscription = new HttpSubscription({
+      request: req,
+      userId: userId
     });
+
+    httpSubscription.on("ready", function (response) {
+      JsonRoutes.sendResult(res, 200, response);
+    });
+
+    var handlerArgs = httpOptions.getArgsFromRequest(req);
+
+    var handlerReturn = handler.apply(httpSubscription, handlerArgs);
+
+    // Fast track for publishing cursors - we don't even need livequery here,
+    // just making a normal DB query
+    if (handlerReturn && handlerReturn._publishCursor) {
+      httpPublishCursor(handlerReturn, httpSubscription);
+      httpSubscription.ready();
+    } else if (handlerReturn && _.isArray(handlerReturn)) {
+      // We don't need to run the checks to see if the cursors overlap and stuff
+      // because calling Meteor.publish will do that for us :]
+      _.each(handlerReturn, function (cursor) {
+        httpPublishCursor(cursor, httpSubscription);
+      });
+
+      httpSubscription.ready();
+    }
   });
 };
 
@@ -135,25 +133,27 @@ function addHTTPMethod(httpMethod, url, handler, options) {
   });
 
   JsonRoutes.add(httpMethod, url, function (req, res) {
-    catchAndReportErrors(url, res, function () {
-      var userId = getUserIdFromRequest(req);
+    var userId = getUserIdFromRequest(req);
+    var statusCode = 200;
 
-      // XXX replace with a real one?
-      var methodInvocation = {
-        userId: userId,
-        setUserId: function () {
-          throw Error("setUserId not implemented in this version of simple:rest");
-        },
-        isSimulation: false,
-        unblock: function () {
-          // no-op
-        }
-      };
+    // XXX replace with a real one?
+    var methodInvocation = {
+      userId: userId,
+      setUserId: function () {
+        throw Error("setUserId not implemented in this version of simple:rest");
+      },
+      isSimulation: false,
+      unblock: function () {
+        // no-op
+      },
+      setStatusCode: function (code) {
+        statusCode = code;
+      }
+    };
 
-      var handlerArgs = options.getArgsFromRequest(req);
-      var handlerReturn = handler.apply(methodInvocation, handlerArgs);
-      JsonRoutes.sendResult(res, 200, handlerReturn);
-    });
+    var handlerArgs = options.getArgsFromRequest(req);
+    var handlerReturn = handler.apply(methodInvocation, handlerArgs);
+    JsonRoutes.sendResult(res, statusCode, handlerReturn);
   });
 }
 
@@ -240,32 +240,6 @@ function catchAndReportErrors(url, res, func) {
   try {
     return func();
   } catch (error) {
-    var errorJson;
-    if (error instanceof Meteor.Error) {
-      errorJson = {
-        error: error.error,
-        reason: error.reason,
-        details: error.details
-      };
-    } else if (error.sanitizedError instanceof Meteor.Error) {
-      errorJson = {
-        error: error.sanitizedError.error,
-        reason: error.sanitizedError.reason,
-        details: error.sanitizedError.details
-      };
-    } else {
-      console.log("Internal server error in " + url, error, error.stack);
-      errorJson = {
-        error: "internal-server-error",
-        reason: "Internal server error"
-      };
-    }
-
-    var code = 500;
-    if (_.isNumber(errorJson.error)) {
-      code = errorJson.error;
-    }
-
-    JsonRoutes.sendResult(res, code, errorJson);
+    JsonRoutes.sendResult(res, null, error);
   }
 }

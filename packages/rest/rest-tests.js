@@ -87,6 +87,48 @@ if (Meteor.isServer) {
     }
   });
 
+  Meteor.method("status-code", function () {
+    this.setStatusCode(222);
+  });
+
+  Meteor.method("throws-error", function () {
+    throw new Error('Bad');
+  });
+
+  Meteor.method("throws-meteor-error", function () {
+    throw new Meteor.Error('foo-bar', 'Foo');
+  });
+
+  Meteor.method("throws-sanitized-error", function () {
+    var error = new Error('Bad');
+    error.sanitizedError = new Meteor.Error('foo-bar', 'Foo');
+    throw error;
+  });
+
+  Meteor.method("throws-error-custom", function () {
+    var error = new Error('Bad');
+    error.jsonResponse = {ding: 'dong'};
+    error.statusCode = 499;
+    throw error;
+  });
+
+  Meteor.method("throws-meteor-error-custom", function () {
+    var error = new Meteor.Error('foo-bar', 'Foo');
+    error.jsonResponse = {ding: 'dong'};
+    error.statusCode = 499;
+    throw error;
+  });
+
+  Meteor.method("throws-sanitized-error-custom", function () {
+    var error = new Error('Bad');
+    error.jsonResponse = {ding: 'ding'};
+    error.statusCode = 999;
+    error.sanitizedError = new Meteor.Error('foo-bar', 'Foo');
+    error.sanitizedError.jsonResponse = {ding: 'dong'};
+    error.sanitizedError.statusCode = 499;
+    throw error;
+  });
+
   Meteor.method("add-all-arguments", function (a, b, c) {
     return a + b + c;
   });
@@ -233,6 +275,86 @@ if (Meteor.isServer) {
       }, expect(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("calling method with wrong auth", [
+    function (test, expect) {
+      HTTP.post("/methods/return-five-auth", {
+        headers: { Authorization: "Bearer foo" }
+      }, expect(function (err, res) {
+        test.equal(err, null);
+        test.equal(res.data, 0);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method error", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-error", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.error, "internal-server-error");
+        test.equal(res.statusCode, 500);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method meteor error", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-meteor-error", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.reason, "Foo");
+        test.equal(res.statusCode, 400);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method error with meteor error", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-sanitized-error", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.reason, "Foo");
+        test.equal(res.statusCode, 400);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method error custom", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-error-custom", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.ding, "dong");
+        test.equal(res.statusCode, 499);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method meteor error custom", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-meteor-error-custom", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.ding, "dong");
+        test.equal(res.statusCode, 499);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method error with meteor error custom", [
+    function (test, expect) {
+      HTTP.post("/methods/throws-sanitized-error-custom", expect(function (err, res) {
+        test.isTrue(!!err);
+        test.equal(res.data.ding, "dong");
+        test.equal(res.statusCode, 499);
+      }));
+    }
+  ]);
+
+  testAsyncMulti("method status code", [
+    function (test, expect) {
+      HTTP.post("/methods/status-code", expect(function (err, res) {
+        test.isFalse(!!err);
+        test.equal(res.statusCode, 222);
       }));
     }
   ]);

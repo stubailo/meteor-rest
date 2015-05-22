@@ -21,3 +21,4 @@ A set of packages that makes it easy to make your Meteor app's data accessible o
 discussed independently.
 3. Please follow the [Meteor style guide](https://github.com/meteor/meteor/wiki/Meteor-Style-Guide) as much as possible.
 4. Please rebase instead of merging. When submitting a PR, make sure you have rebased on master first.
+5. Feature discussions happen inside GitHub issues, or in Hackpads on meteor.hackpad.com if it is a big design.

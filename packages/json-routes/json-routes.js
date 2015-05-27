@@ -33,7 +33,7 @@ JsonRoutes.add = function (method, path, handler) {
     path: path
   });
 
-  connectRouter[method](path, function (req, res, next) {
+  connectRouter[method.toLowerCase()](path, function (req, res, next) {
     Fiber(function () {
       handler(req, res, next);
     }).run();

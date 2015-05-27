@@ -1,3 +1,5 @@
+/* global JsonRoutes:true */
+
 var Fiber = Npm.require("fibers");
 var connect = Npm.require('connect');
 var connectRoute = Npm.require('connect-route');

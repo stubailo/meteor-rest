@@ -1,3 +1,7 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global HTTP:false - from http package */
+/* global testAsyncMulti:false - from test-helpers package */
+
 if (Meteor.isServer) {
   var Widgets = new Mongo.Collection("widgets");
 
@@ -102,7 +106,7 @@ if (Meteor.isServer) {
       return [ parseInt(a, 10), parseInt(b, 10) ];
     },
     httpMethod: "get"
-  })
+  });
 
   Tinytest.add("routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
@@ -242,7 +246,7 @@ if (Meteor.isServer) {
     function (test, expect) {
       HTTP.post("/widgets", { data: [{
         index: 10
-      }] }, expect(function (err, res) {
+      }] }, expect(function (err) {
         test.equal(err, null);
       }));
     },

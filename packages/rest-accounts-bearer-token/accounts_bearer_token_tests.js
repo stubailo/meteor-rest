@@ -1,3 +1,7 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global HTTP:false - from http package */
+/* global testAsyncMulti:false - from test-helpers package */
+
 if (Meteor.isServer) {
   JsonRoutes.add("get", "accounts-bearer-token", function (req, res) {
     JsonRoutes.sendResult(res, 200, req.userId);
@@ -6,7 +10,8 @@ if (Meteor.isServer) {
 else { // Meteor.isClient
   var token;
   var userId;
-  testAsyncMulti("Bearer Token Middleware - should set req.userId using standard bearer token", [
+  testAsyncMulti("Bearer Token Middleware - " +
+                 "should set req.userId using standard bearer token", [
     function (test, expect) {
       Meteor.call("clearUsers", expect(function () {}));
     },

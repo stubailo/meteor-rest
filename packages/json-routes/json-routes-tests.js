@@ -1,3 +1,7 @@
+/* global JsonRoutes:false - from this package */
+/* global HTTP:false - from http package */
+/* global testAsyncMulti:false - from test-helpers package */
+
 // This package is also tested in the `simple:rest` package.
 if (Meteor.isServer) {
   JsonRoutes.add("GET", "case-insensitive-method-1", function (req, res) {
@@ -11,7 +15,8 @@ if (Meteor.isServer) {
   });
 }
 else { // Meteor.isClient
-  testAsyncMulti("JSON Routes - should support case-insensitive HTTP method types", [
+  testAsyncMulti("JSON Routes - should support case-insensitive " +
+                 "HTTP method types", [
     function (test, expect) {
       HTTP.get("/case-insensitive-method-1", expect(function (err, res) {
         test.equal(err, null);

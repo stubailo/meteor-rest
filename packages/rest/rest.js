@@ -1,3 +1,6 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global HttpSubscription:false - from this package */
+
 var oldPublish = Meteor.publish;
 
 Meteor.publish = function (name, handler, options) {
@@ -44,7 +47,8 @@ Meteor.publish = function (name, handler, options) {
         httpPublishCursor(handlerReturn, httpSubscription);
         httpSubscription.ready();
       } else if (handlerReturn && _.isArray(handlerReturn)) {
-        // We don't need to run the checks to see if the cursors overlap and stuff
+        // We don't need to run the checks to see if
+        // the cursors overlap and stuff
         // because calling Meteor.publish will do that for us :]
         _.each(handlerReturn, function (cursor) {
           httpPublishCursor(cursor, httpSubscription);
@@ -142,7 +146,8 @@ function addHTTPMethod(httpMethod, url, handler, options) {
       var methodInvocation = {
         userId: userId,
         setUserId: function () {
-          throw Error("setUserId not implemented in this version of simple:rest");
+          throw Error("setUserId not implemented in this " +
+                      "version of simple:rest");
         },
         isSimulation: false,
         unblock: function () {
@@ -180,7 +185,8 @@ function defaultGetArgsFromRequest(req) {
     var parsed = parseInt(name, 10);
 
     if (_.isNaN(parsed)) {
-      throw new Error("REST publish doesn't support parameters whose names aren't integers.");
+      throw new Error("REST publish doesn't support parameters " +
+                      "whose names aren't integers.");
     }
 
     args[parsed] = value;

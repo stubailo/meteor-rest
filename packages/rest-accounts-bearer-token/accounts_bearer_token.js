@@ -1,3 +1,5 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+
 var Fiber = Npm.require("fibers");
 
 // Add the authorized user ID, if any, to the request
@@ -26,9 +28,15 @@ function getUserIdFromRequest(req) {
   }
 
   // Check token expiration
-  var tokenExpires = Package["accounts-base"].Accounts._tokenExpiration(token.when);
+  var tokenExpires = Package["accounts-base"]
+    .Accounts
+    ._tokenExpiration(token.when);
+
   if (new Date() >= tokenExpires) {
-    throw new Meteor.Error("token-expired", "Your login token has expired. Please log in again.");
+    throw new Meteor.Error(
+      "token-expired",
+      "Your login token has expired. Please log in again."
+    );
   }
 
   var user = Meteor.users.findOne({
@@ -49,7 +57,9 @@ function hashToken(unhashedToken) {
   // it actually takes an object of which it only uses one property, so don't
   // give it any more properties than it needs.
   var hashStampedTokenArg = { token: unhashedToken };
-  var hashStampedTokenReturn = Package["accounts-base"].Accounts._hashStampedToken(hashStampedTokenArg);
+  var hashStampedTokenReturn = Package["accounts-base"]
+    .Accounts
+    ._hashStampedToken(hashStampedTokenArg);
   check(hashStampedTokenReturn, {
     hashedToken: String
   });

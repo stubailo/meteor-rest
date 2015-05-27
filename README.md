@@ -1,4 +1,4 @@
-# REST for Meteor
+# REST for Meteor [![Build Status](https://travis-ci.org/stubailo/meteor-rest.svg)](https://travis-ci.org/stubailo/meteor-rest)
 
 A set of packages that makes it easy to make your Meteor app's data accessible over HTTP. Easily integrate your Meteor backend into a native mobile app or query your data from your Rails or PHP app.
 

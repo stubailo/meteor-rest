@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.10"
+before_install:
+  - "curl -L http://git.io/ejPSng | /bin/sh"
+sudo: required
+env:
+  - PACKAGES=./packages/rest PACKAGE_DIRS=./packages/
+  - PACKAGES=./packages/json-routes PACKAGE_DIRS=./packages/
+  - PACKAGES=./packages/rest-accounts-password PACKAGE_DIRS=./packages/
+  - PACKAGES=./packages/rest-bearer-token-parser PACKAGE_DIRS=./packages/
+  - PACKAGES=./packages/authenticate-user-by-token PACKAGE_DIRS=./packages/

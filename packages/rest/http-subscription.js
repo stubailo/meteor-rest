@@ -1,3 +1,6 @@
+/* global HttpSubscription:true */
+/* global HttpConnection:false - from this package */
+
 var EventEmitter = Npm.require("events").EventEmitter;
 
 // This file describes something like Subscription in

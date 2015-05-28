@@ -1,3 +1,7 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global paths:true */
+/* global pathInfo:true */
+
 // publish all API methods
 Meteor.publish("api-routes", function () {
   var self = this;

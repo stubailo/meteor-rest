@@ -1,3 +1,6 @@
+/* global HTTP:false - from http package */
+/* global testAsyncMulti:false - from test-helpers package */
+
 if (Meteor.isServer) {
   Meteor.methods({
     clearUsers: function () {
@@ -9,9 +12,6 @@ if (Meteor.isServer) {
     },
     getUser: function (username) {
       return Meteor.users.findOne({username: username});
-    },
-    getLogs: function () {
-      return logs;
     }
   });
 } else {
@@ -88,7 +88,7 @@ if (Meteor.isServer) {
       HTTP.post(registerEndpoint, { data: {
         username: "seconduser",
         password: "test"
-      } }, expect(function (err, res) {
+      } }, expect(function (err) {
         if (err) { throw err; }
       }));
     },
@@ -177,7 +177,7 @@ if (Meteor.isServer) {
     function (test, expect) {
       HTTP.post(registerEndpoint, { data: {
         password: "test"
-      } }, expect(function (err, res) {
+      } }, expect(function (err) {
         test.equal(err.response.data.reason, "Need to set a username or email");
       }));
     }

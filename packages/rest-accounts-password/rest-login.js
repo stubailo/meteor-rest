@@ -1,5 +1,8 @@
 /* global JsonRoutes:false - from simple:json-routes package */
 
+JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
+JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
+
 JsonRoutes.add("options", "/users/login", function (req, res) {
   JsonRoutes.sendResult(res, 200);
 });

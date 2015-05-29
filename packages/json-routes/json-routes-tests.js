@@ -15,8 +15,7 @@ if (Meteor.isServer) {
   });
 }
 else { // Meteor.isClient
-  testAsyncMulti("JSON Routes - should support case-insensitive " +
-                 "HTTP method types", [
+  testAsyncMulti("JSON Routes - support case-insensitive HTTP method types", [
     function (test, expect) {
       HTTP.get("/case-insensitive-method-1", expect(function (err, res) {
         test.equal(err, null);

@@ -245,32 +245,13 @@ JsonRoutes.setResponseHeaders({
 });
 ```
 
-### Authentication
-
-API endpoints generated with this package accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header)).
-
-```http
-Authorization: Bearer <token>
-```
-
-Here is how you could use Meteor's `http` package to call a method as a logged in user. Inside the method, the current user can be accessed the exact same way as in a normal method call, through `this.userId`.
-
-```js
-HTTP.post("/methods/return-five-auth", {
-  headers: { Authorization: "Bearer " + token }
-}, function (err, res) {
-  console.log(res.data); // 5
-});
-```
-
-### Logging in over HTTP
-
-This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. Use the following packages to log in over HTTP:
-
-- [`simple:rest-accounts-password`](https://github.com/stubailo/meteor-rest/blob/master/packages/rest-accounts-password/README.md)
-- More coming soon for login with Facebook, Google, etc
-
 ## Change log
+
+#### Unreleased
+
+- Move auth functionality to separate middleware packages:
+  - rest-bearer-token-parser: Parse a standard bearer token
+  - authenticate-user-by-token: Authenticate a `Meteor.user` via auth token
 
 #### 0.2.3
 

@@ -11,24 +11,26 @@ Package.describe({
 });
 
 Npm.depends({
-  connect: "2.11.0",
-  "connect-route": "0.1.5"
+  connect: '2.11.0',
+  'connect-route': '0.1.5'
 });
 
 Package.onUse(function(api) {
-  api.export("JsonRoutes");
   api.versionsFrom('1.0');
-  api.addFiles('json-routes.js', "server");
-
   api.use([
-    "webapp",
-    "underscore"
-  ], "server");
+    'webapp',
+    'underscore'
+  ], 'server');
+  api.addFiles('json-routes.js', 'server');
+  api.addFiles('middleware.js', 'server');
+
+  api.export('JsonRoutes', 'server');
 });
 
 Package.onTest(function(api) {
   api.use('tinytest');
   api.use('test-helpers');
   api.use('simple:json-routes');
+  api.use('http');
   api.addFiles('json-routes-tests.js');
 });

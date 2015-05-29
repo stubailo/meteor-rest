@@ -37,7 +37,34 @@ Both login and registration have the same response format.
 }
 ```
 
+### Authentication
+
+After adding this package, API endpoints accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header)).
+
+```http
+Authorization: Bearer <token>
+```
+
+Here is how you could use Meteor's `http` package to call a method as a logged in user. Inside the method, the current user can be accessed the exact same way as in a normal method call, through `this.userId`.
+
+```js
+HTTP.post("/methods/return-five-auth", {
+  headers: { Authorization: "Bearer " + token }
+}, function (err, res) {
+  console.log(res.data); // 5
+});
+```
+
 ### Change log
+
+#### Unreleased 
+
+- Add token parsing and auth middleware into the middleware stack
+  - This functionality was moved from simple:rest, since it's outside its scope
+  - _Known issue: Middleware is added on all routes (user should have control 
+    over which routes middleware is applied, and at the very least it should be 
+    restricted to API routes)_
+- Use the latest version of `simple:json-routes` (1.0.3)
 
 #### 1.0.3
 

@@ -119,20 +119,13 @@ var setStatusCode = function (res, code, data) {
  * Sets the response headers, status code, and body, and ends it.
  * The JSON response will be pretty printed if NODE_ENV is `development`.
  *
- * @param {Object}                            res  Response object
- * @param {Number}                            code HTTP status code. If `json`
- *                                                 argument is an `Error`
- *                                                 object, this will be
- *                                                 overwritten based on the
- *                                                 error.
+ * @param {Object} res Response object
+ * @param {Number} code HTTP status code. If `json` argument is an `Error`
+ *   object, this will be overwritten based on the error.
  * @param {Object|Array|null|undefined|Error} data The object to stringify as
- *                                                 the response. If `null`, the
- *                                                 response will be "null". If
- *                                                 `undefined`, there will be
- *                                                 no response body. If an
- *                                                 `Error` type, a JSON
- *                                                 representation of the
- *                                                 error details will be sent.
+ *   the response. If `null`, the response will be "null". If
+ *   `undefined`, there will be no response body. If an
+ *   `Error` type, a JSON representation of the error details will be sent.
  */
 JsonRoutes.sendResult = function (res, code, data) {
   // Set headers on response

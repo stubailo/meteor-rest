@@ -3,6 +3,9 @@
 /* global testAsyncMulti:false - from test-helpers package */
 
 if (Meteor.isServer) {
+  JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
+  JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
+
   var Widgets = new Mongo.Collection("widgets");
 
   Meteor.publish("widgets", function () {
@@ -108,12 +111,12 @@ if (Meteor.isServer) {
     httpMethod: "get"
   });
 
-  Tinytest.add("routes exist for mutator methods", function (test) {
+  Tinytest.add("Simple REST - routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
       "/widgets",
       "/widgets/:_id",
       "/doodles",
-      "/doodles/:_id",
+      "/doodles/:_id"
     ];
 
     _.each(mutatorMethodPaths, function (path) {
@@ -134,27 +137,27 @@ if (Meteor.isServer) {
   });
 } else {
   // Using Meteor HTTP
-  testAsyncMulti("getting a publication", [
-    function (test, expect) {
-      HTTP.post("/methods/reset-db", expect(function () {}));
+  testAsyncMulti("Simple REST - getting a publication", [
+    function (test, waitFor) {
+      HTTP.post("/methods/reset-db", waitFor(function () {}));
     },
-    function (test, expect) {
-      HTTP.get("/publications/widgets", expect(function (err, res) {
+    function (test, waitFor) {
+      HTTP.get("/publications/widgets", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
     },
-    function (test, expect) {
-      HTTP.get("/publications/widgets-manual", expect(function (err, res) {
+    function (test, waitFor) {
+      HTTP.get("/publications/widgets-manual", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
     }
   ]);
 
-  testAsyncMulti("getting a publication with multiple cursors", [
-    function (test, expect) {
-      HTTP.get("/publications/doodles-and-widgets", expect(function (err, res) {
+  testAsyncMulti("Simple REST - getting a publication with multiple cursors", [
+    function (test, waitFor) {
+      HTTP.get("/publications/doodles-and-widgets", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
         test.equal(_.size(res.data.doodles), 10);
@@ -162,28 +165,28 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("getting a publication with custom URL", [
-    function (test, expect) {
-      HTTP.post("/i-love-widgets", expect(function (err, res) {
+  testAsyncMulti("Simple REST - getting a publication with custom URL", [
+    function (test, waitFor) {
+      HTTP.post("/i-love-widgets", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
     }
   ]);
 
-  testAsyncMulti("getting a publication with URL arguments", [
-    function (test, expect) {
-      HTTP.get("/widgets-with-index-above/4", expect(function (err, res) {
+  testAsyncMulti("Simple REST - getting a publication with URL arguments", [
+    function (test, waitFor) {
+      HTTP.get("/widgets-with-index-above/4", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 5);
       }));
     }
   ]);
 
-  testAsyncMulti("getting a publication with query arguments", [
-    function (test, expect) {
+  testAsyncMulti("Simple REST - getting a publication with query arguments", [
+    function (test, waitFor) {
       HTTP.get("/publications/widgets-above-index-custom-args?index=4",
-        expect(function (err, res) {
+        waitFor(function (err, res) {
           test.equal(err, null);
           test.equal(_.size(res.data.widgets), 5);
         }));
@@ -191,16 +194,16 @@ if (Meteor.isServer) {
   ]);
 
   var token;
-  testAsyncMulti("getting a publication with authorization", [
-    function (test, expect) {
-      Meteor.call("clearUsers", expect(function () {}));
+  testAsyncMulti("Simple REST - getting a publication with authorization", [
+    function (test, waitFor) {
+      Meteor.call("clearUsers", waitFor(function () {}));
     },
-    function (test, expect) {
+    function (test, waitFor) {
       HTTP.post("/users/register", { data: {
         username: "test",
         email: "test@test.com",
         password: "test"
-      }}, expect(function (err, res) {
+      }}, waitFor(function (err, res) {
         test.equal(err, null);
         test.isTrue(Match.test(res.data, {
           id: String,
@@ -211,30 +214,30 @@ if (Meteor.isServer) {
         token = res.data.token;
       }));
     },
-    function (test, expect) {
+    function (test, waitFor) {
       HTTP.get("/publications/widgets-authorized", {
         headers: { Authorization: "Bearer " + token }
-      }, expect(function (err, res) {
+      }, waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
     }
   ]);
 
-  testAsyncMulti("calling method", [
-    function (test, expect) {
-      HTTP.post("/methods/return-five", expect(function (err, res) {
+  testAsyncMulti("Simple REST - calling method", [
+    function (test, waitFor) {
+      HTTP.post("/methods/return-five", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
       }));
     }
   ]);
 
-  testAsyncMulti("calling method with auth", [
-    function (test, expect) {
+  testAsyncMulti("Simple REST - calling method with auth", [
+    function (test, waitFor) {
       HTTP.post("/methods/return-five-auth", {
         headers: { Authorization: "Bearer " + token }
-      }, expect(function (err, res) {
+      }, waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
       }));
@@ -242,31 +245,31 @@ if (Meteor.isServer) {
   ]);
 
   var widgets = [];
-  testAsyncMulti("mutator methods", [
-    function (test, expect) {
+  testAsyncMulti("Simple REST - mutator methods", [
+    function (test, waitFor) {
       HTTP.post("/widgets", { data: [{
         index: 10
-      }] }, expect(function (err) {
+      }] }, waitFor(function (err) {
         test.equal(err, null);
       }));
     },
-    function (test, expect) {
-      HTTP.get("/publications/widgets", expect(function (err, res) {
+    function (test, waitFor) {
+      HTTP.get("/publications/widgets", waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 11);
         widgets = res.data.widgets;
       }));
     },
-    function (test, expect) {
+    function (test, waitFor) {
       var _id = _.values(widgets)[0]._id;
       HTTP.call("patch", "/widgets/" + _id, {
         data: { specialKey: "Over 9000!" }
-      }, expect(function (err) {
+      }, waitFor(function (err) {
         test.equal(err, null);
       }));
     },
-    function (test, expect) {
-      HTTP.get("/publications/widgets", expect(function (err, res) {
+    function (test, waitFor) {
+      HTTP.get("/publications/widgets", waitFor(function (err, res) {
         test.equal(err, null);
 
         // Make sure our special key was saved
@@ -274,22 +277,22 @@ if (Meteor.isServer) {
           { specialKey: "Over 9000!" }));
       }));
     },
-    function (test, expect) {
-      HTTP.del("/widgets/" + _.values(widgets)[0]._id, expect(function (err) {
+    function (test, waitFor) {
+      HTTP.del("/widgets/" + _.values(widgets)[0]._id, waitFor(function (err) {
         test.equal(err.response.data.reason, "Access denied");
       }));
     }
   ]);
 
   // Some tests with JQuery as well
-  testAsyncMulti("calling method with JQuery", [
-    function (test, expect) {
+  testAsyncMulti("Simple REST - calling method with JQuery", [
+    function (test, waitFor) {
       $.ajax({
         method: "post",
         url: "/methods/add-all-arguments",
         data: JSON.stringify([1, 2, 3]),
         contentType: "application/json",
-        success: expect(function (data) {
+        success: waitFor(function (data) {
           test.equal(data, 6);
         })
       });
@@ -297,21 +300,21 @@ if (Meteor.isServer) {
   ]);
 
   // Some tests with JQuery as well
-  testAsyncMulti("calling method with JQuery with custom getArgsFromRequest", [
-    function (test, expect) {
+  testAsyncMulti("Simple REST - calling method with JQuery with custom getArgsFromRequest", [
+    function (test, waitFor) {
       $.ajax({
         method: "get",
         url: "/add-arguments-from-url/2/3",
-        success: expect(function (data) {
+        success: waitFor(function (data) {
           test.equal(data, 5);
         })
       });
     }
   ]);
 
-  testAsyncMulti("getting publication with JQuery", [
-    function (test, expect) {
-      $.get("/publications/widgets", expect(function (data) {
+  testAsyncMulti("Simple REST - getting publication with JQuery", [
+    function (test, waitFor) {
+      $.get("/publications/widgets", waitFor(function (data) {
         test.equal(data.widgets.length, 11);
       }));
     }

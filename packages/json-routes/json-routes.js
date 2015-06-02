@@ -9,8 +9,11 @@ JsonRoutes = {};
 WebApp.rawConnectHandlers.use(connect.bodyParser());
 WebApp.rawConnectHandlers.use(connect.query());
 
-JsonRoutes.middleWare = connect();
-WebApp.rawConnectHandlers.use(JsonRoutes.middleWare);
+// Handler for adding middleware before an endpoint (JsonRoutes.middleWare
+// is just for legacy reasons). Also serves as a namespace for middleware
+// packages to declare their middleware functions.
+JsonRoutes.Middleware = JsonRoutes.middleWare = connect();
+WebApp.rawConnectHandlers.use(JsonRoutes.Middleware);
 
 // List of all defined JSON API endpoints
 JsonRoutes.routes = [];

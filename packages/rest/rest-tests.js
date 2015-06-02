@@ -92,7 +92,7 @@ if (Meteor.isServer) {
   });
 
   Meteor.method("status-code", function () {
-    this.setStatusCode(222);
+    this.setHttpStatusCode(222);
   });
 
   Meteor.method("throws-error", function () {
@@ -111,24 +111,24 @@ if (Meteor.isServer) {
 
   Meteor.method("throws-error-custom", function () {
     var error = new Error('Bad');
-    error.jsonResponse = {ding: 'dong'};
+    error.data = {ding: 'dong'};
     error.statusCode = 499;
     throw error;
   });
 
   Meteor.method("throws-meteor-error-custom", function () {
     var error = new Meteor.Error('foo-bar', 'Foo');
-    error.jsonResponse = {ding: 'dong'};
+    error.data = {ding: 'dong'};
     error.statusCode = 499;
     throw error;
   });
 
   Meteor.method("throws-sanitized-error-custom", function () {
     var error = new Error('Bad');
-    error.jsonResponse = {ding: 'ding'};
+    error.data = {ding: 'ding'};
     error.statusCode = 999;
     error.sanitizedError = new Meteor.Error('foo-bar', 'Foo');
-    error.sanitizedError.jsonResponse = {ding: 'dong'};
+    error.sanitizedError.data = {ding: 'dong'};
     error.sanitizedError.statusCode = 499;
     throw error;
   });
@@ -328,7 +328,7 @@ if (Meteor.isServer) {
     function (test, expect) {
       HTTP.post("/methods/throws-error-custom", expect(function (err, res) {
         test.isTrue(!!err);
-        test.equal(res.data.ding, "dong");
+        test.equal(res.data.error, "internal-server-error");
         test.equal(res.statusCode, 499);
       }));
     }
@@ -339,7 +339,7 @@ if (Meteor.isServer) {
       HTTP.post("/methods/throws-meteor-error-custom",
                 expect(function (err, res) {
                   test.isTrue(!!err);
-                  test.equal(res.data.ding, "dong");
+                  test.equal(res.data.data.ding, "dong");
                   test.equal(res.statusCode, 499);
                 })
                );
@@ -351,7 +351,7 @@ if (Meteor.isServer) {
       HTTP.post("/methods/throws-sanitized-error-custom",
                 expect(function (err, res) {
                   test.isTrue(!!err);
-                  test.equal(res.data.ding, "dong");
+                  test.equal(res.data.data.ding, "dong");
                   test.equal(res.statusCode, 499);
                 })
                );

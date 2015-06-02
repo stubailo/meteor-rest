@@ -151,7 +151,7 @@ function addHTTPMethod(httpMethod, url, handler, options) {
       unblock: function () {
         // no-op
       },
-      setStatusCode: function (code) {
+      setHttpStatusCode: function (code) {
         statusCode = code;
       }
     };

@@ -35,10 +35,17 @@ Add a server-side route that returns JSON.
 
 Return data fom a route.
 
-- `response` - the Node response object you got as an argument to your handler function.
-- `code` - the status code to send. `200` for OK, `500` for internal error, etc. If the `data` argument is an `Error` type, this is overwritten based on the error.
-- `data` - the data you want to send back. This is serialized to JSON with
-content type `application/json`. If `undefined`, there will be no response body. If an `Error` type, a JSON representation of the error details will be sent.
+- `response` - Required. The Node response object you got as an argument to your handler function.
+- `code` - Optional. The status code to send. `200` for OK, `500` for internal error, etc. Default is 200.
+- `data` - Optional. The data you want to send back. This is serialized to JSON with content type `application/json`. If `undefined`, there will be no response body.
+
+### JsonRoutes.sendError(response, code, error)
+
+Return error response fom a route.
+
+- `response` - Required. The Node response object you got as an argument to your handler function.
+- `code` - Optional. The status code to send. Default is taken from `error.statusCode` if present. Otherwise 400.
+- `error` - Optional. An `Error` or `Meteor.Error` object. A JSON representation of the error details will be sent. You can set `error.data` or `error.sanitizedError.data` to some extra data to be serialized and sent with the response.
 
 ### JsonRoutes.setResponseHeaders(headerObj)
 
@@ -68,8 +75,8 @@ JsonRoutes.middleWare.use(function (req, res, next) {
 #### Unreleased
 
 - Allow case-insensitive method names to be passed as the first param to `JsonRoutes.add()` (e.g., `JsonRoutes.add('get',...)` and `JsonRoutes.add('GET',...)` are both acceptable)
-- Add ability for `data` argument of `sendResult` to be an `Error`
-- Catch handler errors and automatically send a response. Look for `statusCode` and `jsonResponse` properties on thrown errors.
+- Add `JsonRoutes.sendError` with automatic parsing of error objects.
+- Catch handler errors and automatically send a response. Look for `statusCode` and `data` properties on thrown errors.
 
 #### 1.0.3
 

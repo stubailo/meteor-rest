@@ -1,3 +1,7 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global HTTP:false - from http package */
+/* global testAsyncMulti:false - from test-helpers package */
+
 var SUCCESS_STATUS_CODE = 200;
 
 if (Meteor.isServer) {

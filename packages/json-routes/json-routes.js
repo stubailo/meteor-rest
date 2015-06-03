@@ -159,7 +159,7 @@ function getStatusCodeFromError(error) {
 
   // At this point, we know the error doesn't have any attached error code
   if (error instanceof Meteor.Error ||
-    (error && error.sanitizedError instanceof Meteor.Error)) {
+    (error.sanitizedError instanceof Meteor.Error)) {
       // If we at least put in some effort to throw a user-facing Meteor.Error,
       // the default code should be less severe
       return 400;

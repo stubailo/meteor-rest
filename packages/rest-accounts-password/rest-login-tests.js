@@ -88,7 +88,7 @@ if (Meteor.isServer) {
       HTTP.post(registerEndpoint, { data: {
         username: "seconduser",
         password: "test"
-      } }, waitFor(function (err, res) {
+      } }, waitFor(function (err) {
         if (err) { throw err; }
       }));
     },
@@ -177,7 +177,7 @@ if (Meteor.isServer) {
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
         password: "test"
-      } }, waitFor(function (err, res) {
+      } }, waitFor(function (err) {
         test.equal(err.response.data.reason, "Need to set a username or email");
       }));
     }

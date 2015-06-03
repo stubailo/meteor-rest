@@ -4,7 +4,9 @@
 
 if (Meteor.isServer) {
   JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
-  JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
+  JsonRoutes.Middleware.use(
+    JsonRoutes.Middleware.authenticateMeteorUserByToken
+  );
 
   var Widgets = new Mongo.Collection("widgets");
 
@@ -153,7 +155,8 @@ if (Meteor.isServer) {
     httpMethod: "get"
   });
 
-  Tinytest.add("Simple REST - routes exist for mutator methods", function (test) {
+  Tinytest.add("Simple REST - " +
+               "routes exist for mutator methods", function (test) {
     var mutatorMethodPaths = [
       "/widgets",
       "/widgets/:_id",
@@ -199,11 +202,13 @@ if (Meteor.isServer) {
 
   testAsyncMulti("Simple REST - getting a publication with multiple cursors", [
     function (test, waitFor) {
-      HTTP.get("/publications/doodles-and-widgets", waitFor(function (err, res) {
-        test.equal(err, null);
-        test.equal(_.size(res.data.widgets), 10);
-        test.equal(_.size(res.data.doodles), 10);
-      }));
+      HTTP.get("/publications/doodles-and-widgets",
+        waitFor(function (err, res) {
+          test.equal(err, null);
+          test.equal(_.size(res.data.widgets), 10);
+          test.equal(_.size(res.data.doodles), 10);
+        })
+      );
     }
   ]);
 
@@ -286,7 +291,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("calling method with wrong auth", [
+  testAsyncMulti("Simple REST - calling method with wrong auth", [
     function (test, expect) {
       HTTP.post("/methods/return-five-auth", {
         headers: { Authorization: "Bearer foo" }
@@ -297,7 +302,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method error", [
+  testAsyncMulti("Simple REST - method error", [
     function (test, expect) {
       HTTP.post("/methods/throws-error", expect(function (err, res) {
         test.isTrue(!!err);
@@ -307,7 +312,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method meteor error", [
+  testAsyncMulti("Simple REST - method meteor error", [
     function (test, expect) {
       HTTP.post("/methods/throws-meteor-error", expect(function (err, res) {
         test.isTrue(!!err);
@@ -317,7 +322,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method error with meteor error", [
+  testAsyncMulti("Simple REST - method error with meteor error", [
     function (test, expect) {
       HTTP.post("/methods/throws-sanitized-error", expect(function (err, res) {
         test.isTrue(!!err);
@@ -327,7 +332,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method error custom", [
+  testAsyncMulti("Simple REST - method error custom", [
     function (test, expect) {
       HTTP.post("/methods/throws-error-custom", expect(function (err, res) {
         test.isTrue(!!err);
@@ -337,7 +342,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method meteor error custom", [
+  testAsyncMulti("Simple REST - method meteor error custom", [
     function (test, expect) {
       HTTP.post("/methods/throws-meteor-error-custom",
                 expect(function (err, res) {
@@ -349,7 +354,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method error with meteor error custom", [
+  testAsyncMulti("Simple REST - method error with meteor error custom", [
     function (test, expect) {
       HTTP.post("/methods/throws-sanitized-error-custom",
                 expect(function (err, res) {
@@ -361,7 +366,7 @@ if (Meteor.isServer) {
     }
   ]);
 
-  testAsyncMulti("method status code", [
+  testAsyncMulti("Simple REST - method status code", [
     function (test, expect) {
       HTTP.post("/methods/status-code", expect(function (err, res) {
         test.isFalse(!!err);
@@ -391,6 +396,10 @@ if (Meteor.isServer) {
       HTTP.call("patch", "/widgets/" + _id, {
         data: { specialKey: "Over 9000!" }
       }, waitFor(function (err) {
+        // PhantomJS (pre 2.0) does not send body with PATCH
+        // ajax requests so this will fail.
+        // See https://github.com/ariya/phantomjs/issues/11384
+        if (window.callPhantom) return;
         test.equal(err, null);
       }));
     },
@@ -398,8 +407,13 @@ if (Meteor.isServer) {
       HTTP.get("/publications/widgets", waitFor(function (err, res) {
         test.equal(err, null);
 
+        // PhantomJS (pre 2.0) does not send body with PATCH
+        // ajax requests so this will fail.
+        // See https://github.com/ariya/phantomjs/issues/11384
+        if (window.callPhantom) return;
+
         // Make sure our special key was saved
-        test.isTrue(_.findWhere(res.data.widgets,
+        test.isTrue(!!_.findWhere(res.data.widgets,
           { specialKey: "Over 9000!" }));
       }));
     },
@@ -426,7 +440,8 @@ if (Meteor.isServer) {
   ]);
 
   // Some tests with JQuery as well
-  testAsyncMulti("Simple REST - calling method with JQuery with custom getArgsFromRequest", [
+  testAsyncMulti("Simple REST - " +
+                 "calling method with JQuery with custom getArgsFromRequest", [
     function (test, waitFor) {
       $.ajax({
         method: "get",

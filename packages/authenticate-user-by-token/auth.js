@@ -12,15 +12,16 @@ var Fiber = Npm.require("fibers");
  *
  * @middleware
  */
-JsonRoutes.Middleware.authenticateMeteorUserByToken = function (req, res, next) {
-  Fiber(function () {
-    var userId = getUserIdFromAuthToken(req.authToken);
-    if (userId) {
-      req.userId = userId;
-    }
-    next();
-  }).run();
-};
+JsonRoutes.Middleware.authenticateMeteorUserByToken =
+  function (req, res, next) {
+    Fiber(function () {
+      var userId = getUserIdFromAuthToken(req.authToken);
+      if (userId) {
+        req.userId = userId;
+      }
+      next();
+    }).run();
+  };
 
 /**
  * Retrieves the ID of the Meteor.user that the given auth token belongs to

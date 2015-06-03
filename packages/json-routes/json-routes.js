@@ -40,7 +40,7 @@ JsonRoutes.add = function (method, path, handler) {
       try {
         handler(req, res, next);
       } catch (err) {
-        JsonRoutes.sendError(res, null, err);
+        JsonRoutes.sendError(res, getStatusCodeFromError(err), err);
       }
     }).run();
   });
@@ -105,8 +105,7 @@ JsonRoutes.sendResult = function (res, code, data) {
  * The JSON response will be pretty printed if NODE_ENV is `development`.
  *
  * @param {Object} res Response object
- * @param {Number} code The status code to send. Default is taken from
- *   `error.statusCode` if present. Otherwise 400.
+ * @param {Number} code The status code to send. Default is 500.
  * @param {Error|Meteor.Error} error The error object to stringify as
  *   the response. A JSON representation of the error details will be
  *   sent. You can set `error.data` or `error.sanitizedError.data` to
@@ -120,7 +119,7 @@ JsonRoutes.sendError = function (res, code, error) {
   error = error || new Error();
 
   // Set status code on response
-  res.statusCode = code || getStatusCodeFromError(error);
+  res.statusCode = code || 500;
 
   // Convert `Error` objects to JSON representations
   var json = JsonRoutes._errorToJson(error);

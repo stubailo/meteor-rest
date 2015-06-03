@@ -89,8 +89,9 @@ JsonRoutes._errorToJson = function (data) {
 JsonRoutes.sendResult = function (res, code, data) {
   // Set headers on response
   setHeaders(res);
+
   // Set status code on response
-  setStatusCode(res, code, data);
+  res.statusCode = code || 200;
 
   // Set response body
   writeJsonToBody(res, data);
@@ -114,8 +115,12 @@ JsonRoutes.sendResult = function (res, code, data) {
 JsonRoutes.sendError = function (res, code, error) {
   // Set headers on response
   setHeaders(res);
+
+  // If no error passed in, use the default empty error
+  error = error || new Error();
+
   // Set status code on response
-  setStatusCode(res, code, error);
+  res.statusCode = code || getStatusCodeFromError(error);
 
   // Convert `Error` objects to JSON representations
   var json = JsonRoutes._errorToJson(error);
@@ -133,25 +138,33 @@ function setHeaders(res) {
   });
 }
 
-function setStatusCode(res, code, data) {
-  if (!data) {
-    res.statusCode = code || 200;
-    return;
+function getStatusCodeFromError(error) {
+  // So that we don't have to keep checking if error exists
+  if (! error) {
+    return 500;
   }
 
-  // If an error has a `statusCode` property, we
-  // use that. This allows packages to check whether
-  // JsonRoutes package is used and if so, to include
-  // a specific error status code with the errors they throw.
-  if (data instanceof Meteor.Error) {
-    res.statusCode = data.statusCode || 400;
-  } else if (data.sanitizedError instanceof Meteor.Error) {
-    res.statusCode = data.sanitizedError.statusCode || data.statusCode || 400;
-  } else if (data instanceof Error) {
-    res.statusCode = data.statusCode || 500;
-  } else {
-    res.statusCode = code || 200;
+  // If an error or sanitizedError has a `statusCode` property, we use that.
+  // This allows packages to check whether JsonRoutes package is used and if so,
+  // to include a specific error status code with the errors they throw.
+  if (error.sanitizedError && error.sanitizedError.statusCode) {
+    return error.sanitizedError.statusCode;
   }
+
+  if (error.statusCode) {
+    return error.statusCode;
+  }
+
+  // At this point, we know the error doesn't have any attached error code
+  if (error instanceof Meteor.Error ||
+    (error && error.sanitizedError instanceof Meteor.Error)) {
+      // If we at least put in some effort to throw a user-facing Meteor.Error,
+      // the default code should be less severe
+      return 400;
+  }
+
+  // Most pessimistic case: internal server error 500
+  return 500;
 }
 
 function buildErrorResponse(obj) {

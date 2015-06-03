@@ -22,7 +22,6 @@ Package.onUse(function(api) {
     'underscore'
   ], 'server');
   api.addFiles('json-routes.js', 'server');
-  api.addFiles('middleware.js', 'server');
 
   api.export('JsonRoutes', 'server');
 });

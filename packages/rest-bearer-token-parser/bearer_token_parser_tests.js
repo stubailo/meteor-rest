@@ -26,47 +26,10 @@ else { // Meteor.isClient
     }
   ]);
 
-  testAsyncMulti('Middleware - Bearer Token Parser - parse valid query access_token', [
+  testAsyncMulti('Middleware - Bearer Token Parser - parse valid query param', [
     function (test, waitFor) {
       HTTP.get (Meteor.absoluteUrl ('/parse-bearer-token'), {
         query: 'access_token=' + token
-      }, waitFor(function (err, resp) {
-        test.equal (err, null);
-        test.equal (resp.statusCode, SUCCESS_STATUS_CODE);
-        test.equal (resp.data, token);
-      }));
-    }
-  ]);
-
-  testAsyncMulti('Middleware - Bearer Token Parser - parse valid post body access_token', [
-    function (test, waitFor) {
-      HTTP.post (Meteor.absoluteUrl ('/parse-bearer-token'), {
-        data: {access_token: token}
-      }, waitFor(function (err, resp) {
-        test.equal (err, null);
-        test.equal (resp.statusCode, SUCCESS_STATUS_CODE);
-        test.equal (resp.data, token);
-      }));
-    }
-  ]);
-
-  testAsyncMulti('Middleware - Bearer Token Parser - parse valid query bearer_token', [
-    function (test, waitFor) {
-      HTTP.get (Meteor.absoluteUrl ('/parse-bearer-token'), {
-        query: 'bearer_token=' + token
-      }, waitFor(function (err, resp) {
-        test.equal (err, null);
-        test.equal (resp.statusCode, SUCCESS_STATUS_CODE);
-        test.equal (resp.data, token);
-      }));
-    }
-  ]);
-
-  testAsyncMulti('Middleware - Bearer Token Parser - parse valid post body bearer_token', [
-    function (test, waitFor) {
-      HTTP.post (Meteor.absoluteUrl ('/parse-bearer-token'), {
-        headers: {'Content-Type': 'application/json'},
-        data: {bearer_token: token}
       }, waitFor(function (err, resp) {
         test.equal (err, null);
         test.equal (resp.statusCode, SUCCESS_STATUS_CODE);

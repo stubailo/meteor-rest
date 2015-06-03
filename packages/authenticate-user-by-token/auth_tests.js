@@ -1,5 +1,10 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+/* global HTTP:false - from http package */
+
 if (Meteor.isServer) {
-  JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
+  JsonRoutes.Middleware.use(
+    JsonRoutes.Middleware.authenticateMeteorUserByToken
+  );
 
   JsonRoutes.add("get", "accounts-auth-user", function (req, res) {
     JsonRoutes.sendResult(res, 200, req.userId);

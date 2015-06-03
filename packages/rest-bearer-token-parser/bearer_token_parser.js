@@ -1,3 +1,5 @@
+/* global JsonRoutes:false - from simple:json-routes package */
+
 /**
  * Parses bearer token from the incoming request
  *

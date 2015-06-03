@@ -122,6 +122,7 @@
     // globals useful when creating Meteor packages
     "Npm": false,
     "Tinytest": false,
+    "testAsyncMulti": false,
 
     // common Meteor packages
     "_": false,               // Underscore.js

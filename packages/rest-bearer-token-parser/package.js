@@ -2,7 +2,8 @@ Package.describe({
   name: 'simple:rest-bearer-token-parser',
   version: '0.0.1',
   // Brief, one-line summary of the package.
-  summary: 'Parse standard bearer token via request headers, query params or body (REST middleware)',
+  summary: 'Parse standard bearer token via request headers, query params ' +
+           'or body (REST middleware)',
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/stubailo/meteor-rest',
   // By default, Meteor will default to using README.md for documentation.

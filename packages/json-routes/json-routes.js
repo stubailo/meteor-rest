@@ -59,15 +59,15 @@ JsonRoutes.setResponseHeaders = function (headers) {
  * Convert `Error` objects to plain response objects suitable
  * for serialization.
  *
- * @param {Any} [data] Should be a Meteor.Error or Error object. If anything
+ * @param {Any} [error] Should be a Meteor.Error or Error object. If anything
  *   else is passed or this argument isn't provided, a generic
  *   "internal-server-error" object is returned
  */
-JsonRoutes._errorToJson = function (data) {
-  if (data instanceof Meteor.Error) {
-    return buildErrorResponse(data);
-  } else if (data && data.sanitizedError instanceof Meteor.Error) {
-    return buildErrorResponse(data.sanitizedError);
+JsonRoutes._errorToJson = function (error) {
+  if (error instanceof Meteor.Error) {
+    return buildErrorResponse(error);
+  } else if (error && error.sanitizedError instanceof Meteor.Error) {
+    return buildErrorResponse(error.sanitizedError);
   } else {
     return {
       error: 'internal-server-error',
@@ -138,7 +138,7 @@ function setHeaders(res) {
 }
 
 function getStatusCodeFromError(error) {
-  // So that we don't have to keep checking if error exists
+  // Bail out if no error passed in
   if (! error) {
     return 500;
   }
@@ -166,17 +166,12 @@ function getStatusCodeFromError(error) {
   return 500;
 }
 
-function buildErrorResponse(obj) {
+function buildErrorResponse(errObj) {
   // If an error has a `data` property, we
   // send that. This allows packages to include
   // extra client-safe data with the errors they throw.
-  var response = {};
-  _.each(['error', 'reason', 'details', 'data'], function (prop) {
-    if (obj[prop] !== undefined) {
-      response[prop] = obj[prop];
-    }
-  });
-  return response;
+  var fields = ['error', 'reason', 'details', 'data'];
+  return _.pick(errObj, fields);
 }
 
 function writeJsonToBody(res, json) {

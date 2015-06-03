@@ -121,6 +121,14 @@ Meteor.method("add-numbers", function (a, b) {
 })
 ```
 
+#### Setting HTTP status code
+
+By default, successful method requests will respond with status code 200 and errors will respond with status code 400. To override this in your method:
+
+```js
+this.setHttpStatusCode(201);
+```
+
 ### Collection methods
 
 The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 

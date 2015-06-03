@@ -37,7 +37,11 @@ JsonRoutes.add = function (method, path, handler) {
 
   connectRouter[method.toLowerCase()](path, function (req, res, next) {
     Fiber(function () {
-      handler(req, res, next);
+      try {
+        handler(req, res, next);
+      } catch (err) {
+        JsonRoutes.sendError(res, getStatusCodeFromError(err), err);
+      }
     }).run();
   });
 };
@@ -51,21 +55,130 @@ JsonRoutes.setResponseHeaders = function (headers) {
   responseHeaders = headers;
 };
 
-var setHeaders = function (res) {
+/**
+ * Convert `Error` objects to plain response objects suitable
+ * for serialization.
+ *
+ * @param {Any} [error] Should be a Meteor.Error or Error object. If anything
+ *   else is passed or this argument isn't provided, a generic
+ *   "internal-server-error" object is returned
+ */
+JsonRoutes._errorToJson = function (error) {
+  if (error instanceof Meteor.Error) {
+    return buildErrorResponse(error);
+  } else if (error && error.sanitizedError instanceof Meteor.Error) {
+    return buildErrorResponse(error.sanitizedError);
+  } else {
+    return {
+      error: 'internal-server-error',
+      reason: 'Internal server error'
+    };
+  }
+};
+
+/**
+ * Sets the response headers, status code, and body, and ends it.
+ * The JSON response will be pretty printed if NODE_ENV is `development`.
+ *
+ * @param {Object} res Response object
+ * @param {Number} code HTTP status code.
+ * @param {Object|Array|null|undefined} data The object to stringify as
+ *   the response. If `null`, the response will be "null". If
+ *   `undefined`, there will be no response body.
+ */
+JsonRoutes.sendResult = function (res, code, data) {
+  // Set headers on response
+  setHeaders(res);
+
+  // Set status code on response
+  res.statusCode = code || 200;
+
+  // Set response body
+  writeJsonToBody(res, data);
+
+  // Send the response
+  res.end();
+};
+
+/**
+ * Sets the response headers, status code, and body, and ends it.
+ * The JSON response will be pretty printed if NODE_ENV is `development`.
+ *
+ * @param {Object} res Response object
+ * @param {Number} code The status code to send. Default is 500.
+ * @param {Error|Meteor.Error} error The error object to stringify as
+ *   the response. A JSON representation of the error details will be
+ *   sent. You can set `error.data` or `error.sanitizedError.data` to
+ *   some extra data to be serialized and sent with the response.
+ */
+JsonRoutes.sendError = function (res, code, error) {
+  // Set headers on response
+  setHeaders(res);
+
+  // If no error passed in, use the default empty error
+  error = error || new Error();
+
+  // Set status code on response
+  res.statusCode = code || 500;
+
+  // Convert `Error` objects to JSON representations
+  var json = JsonRoutes._errorToJson(error);
+
+  // Set response body
+  writeJsonToBody(res, json);
+
+  // Send the response
+  res.end();
+};
+
+function setHeaders(res) {
   _.each(responseHeaders, function (value, key) {
     res.setHeader(key, value);
   });
-};
+}
 
-JsonRoutes.sendResult = function (res, code, json) {
-  setHeaders(res);
-  res.statusCode = code;
+function getStatusCodeFromError(error) {
+  // Bail out if no error passed in
+  if (! error) {
+    return 500;
+  }
 
+  // If an error or sanitizedError has a `statusCode` property, we use that.
+  // This allows packages to check whether JsonRoutes package is used and if so,
+  // to include a specific error status code with the errors they throw.
+  if (error.sanitizedError && error.sanitizedError.statusCode) {
+    return error.sanitizedError.statusCode;
+  }
+
+  if (error.statusCode) {
+    return error.statusCode;
+  }
+
+  // At this point, we know the error doesn't have any attached error code
+  if (error instanceof Meteor.Error ||
+    (error && error.sanitizedError instanceof Meteor.Error)) {
+      // If we at least put in some effort to throw a user-facing Meteor.Error,
+      // the default code should be less severe
+      return 400;
+  }
+
+  // Most pessimistic case: internal server error 500
+  return 500;
+}
+
+function buildErrorResponse(errObj) {
+  // If an error has a `data` property, we
+  // send that. This allows packages to include
+  // extra client-safe data with the errors they throw.
+  var fields = ['error', 'reason', 'details', 'data'];
+  return _.pick(errObj, fields);
+}
+
+function writeJsonToBody(res, json) {
   if (json !== undefined) {
-    var spacer = process.env.NODE_ENV === 'development' ? 2 : null;
+    var shouldPrettyPrint = (process.env.NODE_ENV === 'development');
+    var spacer = shouldPrettyPrint ? 2 : null;
     res.setHeader("Content-type", "application/json");
     res.write(JSON.stringify(json, null, spacer));
   }
-
-  res.end();
-};
+}

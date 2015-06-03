@@ -41,10 +41,10 @@ Return data fom a route.
 
 ### JsonRoutes.sendError(response, code, error)
 
-Return error response fom a route.
+Return an error response from a route.
 
 - `response` - Required. The Node response object you got as an argument to your handler function.
-- `code` - Optional. The status code to send. Default is taken from `error.statusCode` if present. Otherwise 400.
+- `code` - Optional. The status code to send. Default is 500.
 - `error` - Optional. An `Error` or `Meteor.Error` object. A JSON representation of the error details will be sent. You can set `error.data` or `error.sanitizedError.data` to some extra data to be serialized and sent with the response.
 
 ### JsonRoutes.setResponseHeaders(headerObj)

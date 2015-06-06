@@ -1,7 +1,7 @@
-site_name: My Docs
+site_name: REST for Meteor
 theme: readthedocs
 pages:
-- Home: index.md
+- Introduction: index.md
 - 'simple:rest': rest.md
 extra_css:
 - hide-h4.css

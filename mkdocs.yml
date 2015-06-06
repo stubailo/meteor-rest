@@ -5,3 +5,4 @@ pages:
 - 'simple:rest': rest.md
 extra_css:
 - hide-h4.css
+repo_url: 'https://github.com/stubailo/meteor-rest'

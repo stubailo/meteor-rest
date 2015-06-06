@@ -20,6 +20,8 @@ By default, publications are accessible via an HTTP `GET` request at the URL:
 GET /publications/<publication-name>
 ```
 
+### Response format
+
 The response is an object where the keys are the collections in the publication, and each collection has an array of documents. Note that a publication can publish from many collections at once.
 
 ```js
@@ -138,9 +140,9 @@ DELETE /<collection-name>/<_id>
 
 No request body is necessary for deletion, it just deletes the document with the specified `_id`.
 
-### Example code with JQuery
+## Example code with JQuery
 
-Here is how you might call your shiny new HTTP API using JQuery. Note that you must set `contentType` to `"application/json"`, because by default JQuery uses form serialization rather than JSON serialization.
+Here is how you might call your shiny new HTTP API using JQuery. Note that you must set `contentType` to `"application/json"`, because by default JQuery uses form serialization rather than JSON serialization. Form serialization is problematic because it's hard to send arrays in a standard way, and there is no way to tell apart numbers and text strings.
 
 ```js
 // Calling a method
@@ -217,7 +219,7 @@ The result looks like:
 ] }
 ```
 
-> Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
+Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
 
 ## Cross-origin requests
 

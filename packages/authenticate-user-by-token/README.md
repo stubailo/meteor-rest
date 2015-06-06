@@ -1,4 +1,4 @@
-#simple:authenticate-user-by-token
+# simple:authenticate-user-by-token
 
 SimpleRest middleware for validating a Meteor.user's login token
 

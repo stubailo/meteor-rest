@@ -1,0 +1,7 @@
+site_name: My Docs
+theme: readthedocs
+pages:
+- Home: index.md
+- 'simple:rest': rest.md
+extra_css:
+- hide-h4.css

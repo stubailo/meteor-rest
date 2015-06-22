@@ -1,8 +1,18 @@
 #! /bin/bash
 
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+jshint $DIR
+
+result=$?
+if [[ $result != 0 ]]
+  # Exit if the linter didn't pass
+  then exit $result
+fi
+
 meteor test-packages \
-  "$(pwd)/packages/rest" \
-  "$(pwd)/packages/json-routes" \
-  "$(pwd)/packages/rest-bearer-token-parser" \
-  "$(pwd)/packages/authenticate-user-by-token" \
-  "$(pwd)/packages/rest-accounts-password"
+  "$DIR/packages/rest" \
+  "$DIR/packages/json-routes" \
+  "$DIR/packages/rest-bearer-token-parser" \
+  "$DIR/packages/authenticate-user-by-token" \
+  "$DIR/packages/rest-accounts-password"

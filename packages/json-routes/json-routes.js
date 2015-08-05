@@ -6,7 +6,8 @@ var connectRoute = Npm.require('connect-route');
 
 JsonRoutes = {};
 
-WebApp.rawConnectHandlers.use(connect.bodyParser());
+WebApp.rawConnectHandlers.use(connect.urlencoded());
+WebApp.rawConnectHandlers.use(connect.json());
 WebApp.rawConnectHandlers.use(connect.query());
 
 // Handler for adding middleware before an endpoint (JsonRoutes.middleWare

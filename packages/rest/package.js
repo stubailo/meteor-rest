@@ -18,6 +18,7 @@ Package.onUse(function(api) {
     "ddp",
     "meteor",
     "webapp",
+    "check",
     "simple:json-routes@1.0.1",
     "ejson",
     "mongo"
@@ -41,6 +42,8 @@ Package.onTest(function(api) {
   api.use("test-helpers");
   api.use("mongo");
   api.use("random");
+  api.use("check");
+  api.use("jquery");
   api.imply("http");
   api.use('tinytest');
   api.use('simple:rest');

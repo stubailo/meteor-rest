@@ -17,6 +17,7 @@ Npm.depends({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
+  api.use('check');
   api.use([
     'webapp',
     'underscore'

@@ -13,6 +13,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
+  api.use('check');
   api.use('simple:json-routes@1.0.3');
   api.addFiles('bearer_token_parser.js', 'server');
 });

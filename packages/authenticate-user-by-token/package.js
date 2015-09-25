@@ -12,6 +12,7 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
+  api.imply('check');
   api.use('accounts-base@1.2.0');
   api.use('simple:json-routes@1.0.3');
   api.addFiles('auth.js', 'server');

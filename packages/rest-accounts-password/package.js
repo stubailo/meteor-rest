@@ -12,6 +12,8 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
+  api.use('underscore', 'server');
+  api.imply('check');
   api.addFiles('rest-login.js', "server");
   api.use('accounts-password');
   api.use('simple:json-routes@1.0.3');

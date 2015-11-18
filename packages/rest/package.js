@@ -14,36 +14,42 @@ Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
 
   api.use([
-    "underscore",
-    "ddp",
-    "meteor",
-    "webapp",
-    "simple:json-routes@1.0.1",
-    "ejson",
-    "mongo"
-  ], "server");
+    'check',
+    'ddp',
+    'ejson',
+    'meteor',
+    'mongo',
+    'simple:json-routes@1.0.1',
+    'underscore',
+    'webapp',
+  ], 'server');
 
   api.use([
-    "accounts-base"
-  ], "server", {weak: true});
+    'accounts-base'
+  ], 'server', {weak: true});
 
   api.addFiles([
     'http-connection.js',
     'http-subscription.js',
     'rest.js',
     'list-api.js'
-  ], "server");
+  ], 'server');
 });
 
 Package.onTest(function(api) {
-  api.use("simple:rest-accounts-password");
-  api.use("underscore");
-  api.use("test-helpers");
-  api.use("mongo");
-  api.use("random");
-  api.imply("http");
-  api.use('tinytest');
-  api.use('simple:rest');
-  api.use('simple:json-routes');
+  api.use([
+    'check',
+    'http',
+    'jquery',
+    'mongo',
+    'random',
+    'simple:json-routes',
+    'simple:rest',
+    'simple:rest-accounts-password',
+    'test-helpers',
+    'tinytest',
+    'underscore'
+  ]);
+
   api.addFiles('rest-tests.js');
 });

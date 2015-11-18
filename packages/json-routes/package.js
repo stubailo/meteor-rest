@@ -17,10 +17,12 @@ Npm.depends({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
+
   api.use([
-    'webapp',
-    'underscore'
+    'underscore',
+    'webapp'
   ], 'server');
+
   api.addFiles('json-routes.js', 'server');
 
   api.export('JsonRoutes', 'server');

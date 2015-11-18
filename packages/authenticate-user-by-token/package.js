@@ -12,17 +12,25 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.0');
-  api.use('accounts-base@1.2.0');
-  api.use('simple:json-routes@1.0.3');
+
+  api.use([
+    'accounts-base@1.2.0',
+    'simple:json-routes@1.0.3'
+  ], 'server');
+
   api.addFiles('auth.js', 'server');
 });
 
 Package.onTest(function(api) {
-  api.use('tinytest');
-  api.use('test-helpers');
-  api.use('simple:authenticate-user-by-token');
-  api.use('http');
-  api.use('simple:json-routes@1.0.3');
-  api.use('simple:rest-accounts-password@1.0.1');
+  api.use([
+    'check',
+    'http',
+    'simple:authenticate-user-by-token',
+    'simple:json-routes@1.0.3',
+    'simple:rest-accounts-password@1.0.1',
+    'test-helpers',
+    'tinytest'
+  ]);
+
   api.addFiles('auth_tests.js');
 });

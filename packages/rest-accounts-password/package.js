@@ -12,17 +12,28 @@ Package.describe({
 
 Package.onUse(function(api) {
   api.versionsFrom('1.1.0.2');
-  api.addFiles('rest-login.js', "server");
-  api.use('accounts-password');
-  api.use('simple:json-routes@1.0.3');
-  api.use('simple:rest-bearer-token-parser');
-  api.use('simple:authenticate-user-by-token');
+
+  api.use([
+    'accounts-password',
+    'check',
+    'simple:json-routes@1.0.3',
+    'simple:authenticate-user-by-token',
+    'simple:rest-bearer-token-parser',
+    'underscore'
+  ], 'server');
+
+  api.addFiles('rest-login.js', 'server');
 });
 
 Package.onTest(function(api) {
-  api.use('tinytest');
-  api.use('simple:rest-accounts-password');
-  api.use('test-helpers');
-  api.use('http');
+  api.use([
+    'accounts-password',
+    'check',
+    'http',
+    'simple:rest-accounts-password',
+    'test-helpers',
+    'tinytest'
+  ]);
+
   api.addFiles('rest-login-tests.js');
 });

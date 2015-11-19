@@ -157,6 +157,28 @@ DELETE /<collection-name>/<_id>
 
 No request body is necessary for deletion, it just deletes the document with the specified `_id`.
 
+### Choosing Which Collections Should Have Endpoints
+
+By default all collections get endpoints automatically.
+
+To specify only certain collections, in your server code before you define any collections:
+
+```js
+SimpleRest.configure({
+  collections: ['widgets', 'doodles']
+});
+```
+
+Where the strings must match the collection name string you pass to the `Mongo.Collection` constructor.
+
+For no collection endpoints:
+
+```js
+SimpleRest.configure({
+  collections: []
+});
+```
+
 ### Example code with JQuery
 
 Here is how you might call your shiny new HTTP API using JQuery. Note that you must set `contentType` to `"application/json"`, because by default JQuery uses form serialization rather than JSON serialization.

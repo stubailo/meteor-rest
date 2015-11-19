@@ -37,6 +37,8 @@ Package.onUse(function (api) {
     'rest.js',
     'list-api.js',
   ], 'server');
+
+  api.export('SimpleRest');
 });
 
 Package.onTest(function (api) {

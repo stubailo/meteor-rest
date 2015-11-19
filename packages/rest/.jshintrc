@@ -2,7 +2,8 @@
   "extends": "../../.jshintrc",
   "globals": {
     "HttpConnection": true,
-    "HttpSubscription": true
+    "HttpSubscription": true,
+    "SimpleRest": true
   },
   "predef": [
     "check",

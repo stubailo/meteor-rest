@@ -1,5 +1,16 @@
-var oldPublish = Meteor.publish;
+SimpleRest = {};
 
+// Can be used to limit which collections get endpoints:
+// {
+//   collections: ['widgets', 'doodles']
+// }
+// By default all do. Use empty array for none.
+SimpleRest._config = {};
+SimpleRest.configure = function (config) {
+  return _.extend(SimpleRest._config, config);
+};
+
+var oldPublish = Meteor.publish;
 Meteor.publish = function (name, handler, options) {
   options = options || {};
 
@@ -73,6 +84,10 @@ Meteor.method = function (name, handler, options) {
   // make it more RESTful
   if (insideDefineMutationMethods) {
     var collectionName = name.split('/')[1];
+
+    if (_.isArray(SimpleRest._config.collections) &&
+       !_.contains(SimpleRest._config.collections, collectionName)) return;
+
     var modifier = name.split('/')[2];
 
     var collectionUrl = '/' + collectionName;

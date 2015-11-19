@@ -96,7 +96,7 @@ Meteor.method = function (name, handler, options) {
       // Can only remove a single document by the _id
       addHTTPMethod('delete', itemUrl, handler, {
         getArgsFromRequest: function (req) {
-          return [req.params._id];
+          return [{ _id: req.params._id }];
         },
       });
     }

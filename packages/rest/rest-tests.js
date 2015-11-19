@@ -29,6 +29,11 @@ if (Meteor.isServer) {
           index: index,
         });
       });
+
+      Doodles.insert({
+        _id: '123',
+        index: 11,
+      });
     },
   });
 
@@ -180,6 +185,20 @@ if (Meteor.isServer) {
     },
 
     remove: function () {
+      return true;
+    },
+  });
+
+  Doodles.allow({
+    insert: function () {
+      return false;
+    },
+
+    update: function () {
+      return false;
+    },
+
+    remove: function () {
       return false;
     },
   });
@@ -211,7 +230,7 @@ if (Meteor.isServer) {
         waitFor(function (err, res) {
           test.equal(err, null);
           test.equal(_.size(res.data.widgets), 10);
-          test.equal(_.size(res.data.doodles), 10);
+          test.equal(_.size(res.data.doodles), 11);
         })
       );
     },
@@ -394,6 +413,16 @@ if (Meteor.isServer) {
       }, waitFor(function (err) {
         test.equal(err, null);
       }));
+
+      HTTP.post('/doodles', {
+        data: [
+          {
+            index: 10,
+          },
+        ],
+      }, waitFor(function (err) {
+        test.equal(err.response.data.reason, 'Access denied');
+      }));
     },
 
     function (test, waitFor) {
@@ -417,6 +446,18 @@ if (Meteor.isServer) {
         if (window.callPhantom) return;
         test.equal(err, null);
       }));
+
+      HTTP.call('patch', '/doodles/123', {
+        data: {
+          specialKey: 'Over 9000!',
+        },
+      }, waitFor(function (err) {
+        // PhantomJS (pre 2.0) does not send body with PATCH
+        // ajax requests so this will fail.
+        // See https://github.com/ariya/phantomjs/issues/11384
+        if (window.callPhantom) return;
+        test.equal(err.response.data.reason, 'Access denied');
+      }));
     },
 
     function (test, waitFor) {
@@ -436,6 +477,10 @@ if (Meteor.isServer) {
 
     function (test, waitFor) {
       HTTP.del('/widgets/' + _.values(widgets)[0]._id, waitFor(function (err) {
+        test.equal(err, null);
+      }));
+
+      HTTP.del('/doodles/123', waitFor(function (err) {
         test.equal(err.response.data.reason, 'Access denied');
       }));
     },
@@ -473,7 +518,7 @@ if (Meteor.isServer) {
   testAsyncMulti('Simple REST - getting publication with JQuery', [
     function (test, waitFor) {
       $.get('/publications/widgets', waitFor(function (data) {
-        test.equal(data.widgets.length, 11);
+        test.equal(data.widgets.length, 10);
       }));
     },
   ]);

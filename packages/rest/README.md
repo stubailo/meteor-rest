@@ -272,6 +272,18 @@ The result looks like:
 
 > Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
 
+### Error Handling
+
+We recommend that you add our default error handler like so:
+
+```js
+JsonRoutes.ErrorMiddleware.use(RestMiddleware.handleErrorAsJson);
+```
+
+This will convert any `Meteor.Error`s that your methods throw to useful JSON responses.
+
+You can set `error.statusCode` before you throw the error if you want a particular status code returned.
+
 ### Cross-origin requests
 
 If you would like to use your API from the client side of a different app, you need to return a special header. You can do this by hooking into a method on the `simple:json-routes` package, like so:
@@ -287,7 +299,7 @@ JsonRoutes.setResponseHeaders({
 });
 ```
 
-## Change log
+## Change Log
 
 #### Unreleased
 

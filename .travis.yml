@@ -10,3 +10,4 @@ env:
   - PACKAGES=./packages/rest-accounts-password PACKAGE_DIRS=./packages/
   - PACKAGES=./packages/rest-bearer-token-parser PACKAGE_DIRS=./packages/
   - PACKAGES=./packages/authenticate-user-by-token PACKAGE_DIRS=./packages/
+  - PACKAGES=./packages/rest-json-error-handler PACKAGE_DIRS=./packages/

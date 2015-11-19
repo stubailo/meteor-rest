@@ -51,6 +51,7 @@ Package.onTest(function (api) {
     'simple:json-routes',
     'simple:rest',
     'simple:rest-accounts-password',
+    'simple:rest-json-error-handler',
     'test-helpers',
     'tinytest',
     'underscore',

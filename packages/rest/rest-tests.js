@@ -3,12 +3,13 @@ if (Meteor.isServer) {
   JsonRoutes.Middleware.use(
     JsonRoutes.Middleware.authenticateMeteorUserByToken
   );
+  JsonRoutes.ErrorMiddleware.use(RestMiddleware.handleErrorAsJson);
 
-//  SimpleRest.configure({
-//    objectIdCollections: ['widgets']
-//  });
-//
-//  var Widgets = new Mongo.Collection('widgets', {idGeneration: 'MONGO'});
+  //  SimpleRest.configure({
+  //    objectIdCollections: ['widgets']
+  //  });
+  //
+  //  var Widgets = new Mongo.Collection('widgets', {idGeneration: 'MONGO'});
 
   var Widgets = new Mongo.Collection('widgets');
 

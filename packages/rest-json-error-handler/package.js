@@ -3,7 +3,7 @@ Package.describe({
   version: '0.0.1',
 
   // Brief, one-line summary of the package.
-  summary: 'simple:rest middleware for handling standard Connect errors',
+  summary: 'middleware for handling standard Connect errors',
 
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/stubailo/meteor-rest',

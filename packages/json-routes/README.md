@@ -89,13 +89,24 @@ don't follow these guidelines, but doing so should promote a much cleaner
 middleware ecosystem.
 
 Each middleware package should define a single middleware function and add it
-to the `JsonRoutes.Middleware` namespace:
+to `RestMiddleware` namespace:
 
 ```js
-JsonRoutes.Middleware.someMiddlewareFunc = function (req, res, next) {
+RestMiddleware.someMiddlewareFunc = function (req, res, next) {
   // Do some awesome middleware stuff here
 };
+
+RestMiddleware.someMiddlewareErrorFunc = function (err, req, res, next) {
+  // Do some awesome middleware error handling here
+};
 ```
+
+Alternatively, you could publish a pure NodeJS middleware package to NPM, and you will be able to require it and use it in your Meteor package or app.
+
+### Auth Middleware
+
+- By convention, any middleware you create that parses the request to find an authentication token should then save that token on `req.authToken`. See `simple:rest-bearer-token-parser` for an example.
+- By convention, any middleware you create that determines a user ID should save that ID on `req.userId`. See `simple:authenticate-user-by-token` for an example.
 
 ## Change Log
 

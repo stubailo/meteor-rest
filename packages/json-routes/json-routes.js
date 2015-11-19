@@ -1,6 +1,6 @@
 /* global JsonRoutes:true */
 
-var Fiber = Npm.require("fibers");
+var Fiber = Npm.require('fibers');
 var connect = Npm.require('connect');
 var connectRoute = Npm.require('connect-route');
 
@@ -29,14 +29,14 @@ WebApp.rawConnectHandlers.use(connectRoute(function (router) {
 
 JsonRoutes.add = function (method, path, handler) {
   // Make sure path starts with a slash
-  if (path[0] !== "/") {
-    path = "/" + path;
+  if (path[0] !== '/') {
+    path = '/' + path;
   }
 
   // Add to list of known endpoints
   JsonRoutes.routes.push({
     method: method,
-    path: path
+    path: path,
   });
 
   connectRouter[method.toLowerCase()](path, function (req, res, next) {
@@ -51,8 +51,8 @@ JsonRoutes.add = function (method, path, handler) {
 };
 
 var responseHeaders = {
-  "Cache-Control": "no-store",
-  "Pragma": "no-cache"
+  'Cache-Control': 'no-store',
+  Pragma: 'no-cache',
 };
 
 JsonRoutes.setResponseHeaders = function (headers) {
@@ -75,7 +75,7 @@ JsonRoutes._errorToJson = function (error) {
   } else {
     return {
       error: 'internal-server-error',
-      reason: 'Internal server error'
+      reason: 'Internal server error',
     };
   }
 };
@@ -143,7 +143,7 @@ function setHeaders(res) {
 
 function getStatusCodeFromError(error) {
   // Bail out if no error passed in
-  if (! error) {
+  if (!error) {
     return 500;
   }
 
@@ -161,9 +161,9 @@ function getStatusCodeFromError(error) {
   // At this point, we know the error doesn't have any attached error code
   if (error instanceof Meteor.Error ||
     (error.sanitizedError instanceof Meteor.Error)) {
-      // If we at least put in some effort to throw a user-facing Meteor.Error,
-      // the default code should be less severe
-      return 400;
+    // If we at least put in some effort to throw a user-facing Meteor.Error,
+    // the default code should be less severe
+    return 400;
   }
 
   // Most pessimistic case: internal server error 500
@@ -182,7 +182,7 @@ function writeJsonToBody(res, json) {
   if (json !== undefined) {
     var shouldPrettyPrint = (process.env.NODE_ENV === 'development');
     var spacer = shouldPrettyPrint ? 2 : null;
-    res.setHeader("Content-type", "application/json");
+    res.setHeader('Content-type', 'application/json');
     res.write(JSON.stringify(json, null, spacer));
   }
 }

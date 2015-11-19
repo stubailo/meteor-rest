@@ -1,7 +1,4 @@
-/* global HttpSubscription:true */
-/* global HttpConnection:false - from this package */
-
-var EventEmitter = Npm.require("events").EventEmitter;
+var EventEmitter = Npm.require('events').EventEmitter;
 
 // This file describes something like Subscription in
 // meteor/meteor/packages/ddp/livedata_server.js, but instead of sending
@@ -20,16 +17,17 @@ Meteor._inherits(HttpSubscription, EventEmitter);
 _.extend(HttpSubscription.prototype, {
   added: function (collection, id, fields) {
     var self = this;
-    
+
     check(collection, String);
     check(id, String);
 
     self._ensureCollectionInRes(collection);
 
     // Make sure to ignore the _id in fields
-    var addedDocument = _.extend({_id: id}, _.omit(fields, "_id"));
+    var addedDocument = _.extend({_id: id}, _.omit(fields, '_id'));
     self.responseData[collection][id] = addedDocument;
   },
+
   changed: function (collection, id, fields) {
     var self = this;
 
@@ -39,7 +37,7 @@ _.extend(HttpSubscription.prototype, {
     self._ensureCollectionInRes(collection);
 
     var existingDocument = this.responseData[collection][id];
-    var fieldsNoId = _.omit(fields, "_id");
+    var fieldsNoId = _.omit(fields, '_id');
     _.extend(existingDocument, fieldsNoId);
 
     // Delete all keys that were undefined in fields (except _id)
@@ -49,6 +47,7 @@ _.extend(HttpSubscription.prototype, {
       }
     });
   },
+
   removed: function (collection, id) {
     var self = this;
 
@@ -63,18 +62,23 @@ _.extend(HttpSubscription.prototype, {
       delete self.responseData[collection];
     }
   },
+
   ready: function () {
-    this.emit("ready", this._generateResponse());
+    this.emit('ready', this._generateResponse());
   },
+
   onStop: function () {
     // no-op in HTTP
   },
+
   error: function (error) {
     throw error;
   },
+
   _ensureCollectionInRes: function (collection) {
     this.responseData[collection] = this.responseData[collection] || {};
   },
+
   _generateResponse: function () {
     var output = {};
 
@@ -83,5 +87,5 @@ _.extend(HttpSubscription.prototype, {
     });
 
     return output;
-  }
+  },
 });

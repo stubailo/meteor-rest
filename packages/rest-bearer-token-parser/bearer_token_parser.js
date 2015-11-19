@@ -1,5 +1,3 @@
-/* global JsonRoutes:false - from simple:json-routes package */
-
 /**
  * Parses bearer token from the incoming request
  *
@@ -15,8 +13,8 @@
  * @middleware
  */
 JsonRoutes.Middleware.parseBearerToken = function (req, res, next) {
-    req.authToken = parseHeaders(req) || parseQuery(req);
-    next();
+  req.authToken = parseHeaders(req) || parseQuery(req);
+  next();
 };
 
 /**
@@ -26,7 +24,7 @@ JsonRoutes.Middleware.parseBearerToken = function (req, res, next) {
  * @returns {String} The bearer token
  * @private
  */
-function parseHeaders (req) {
+function parseHeaders(req) {
   if (req.headers && req.headers.authorization) {
     var parts = req.headers.authorization.split(' ');
 
@@ -47,8 +45,11 @@ function parseHeaders (req) {
  * @param req {Object} The incoming Connect request
  * @returns {String} The bearer token
  */
-function parseQuery (req) {
+function parseQuery(req) {
+  // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
   if (req.query && req.query.access_token) {
     return req.query.access_token;
   }
+
+  // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 }

@@ -3,7 +3,7 @@
 /* global pathInfo:true */
 
 // publish all API methods
-Meteor.publish("api-routes", function () {
+Meteor.publish('api-routes', function () {
   var self = this;
 
   // Deduplicate routes across paths
@@ -18,7 +18,7 @@ Meteor.publish("api-routes", function () {
   });
 
   _.each(paths, function (pathInfo, path) {
-    self.added("api-routes", path, pathInfo);
+    self.added('api-routes', path, pathInfo);
   });
 
   self.ready();

@@ -32,13 +32,9 @@ getting your changes merged into a release.
 
 ### Coding Conventions
 
-Please adhere to the [Meteor Style Guide] for all conventions. 
- 
-Additional conventions not mentioned in the Meteor Style Guide are:
+If you don't have JSCS, install with `npm i -g jscs`.
 
-1. Use single-quoted strings (e.g., `'Hello world!'` instead of `"Hello 
-   world!"`)
-
+Run `jscs .` and `jshint .` before committing.
 
 ### Committing
 

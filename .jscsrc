@@ -1,0 +1,11 @@
+{
+  "excludeFiles": ["**/.npm/"],
+  "preset": "airbnb",
+  "esprima": "babel-jscs",
+  "disallowSpacesInFunctionExpression": null,
+  "disallowSpacesInAnonymousFunctionExpression": null,
+  "requireSpacesInAnonymousFunctionExpression": {
+    "beforeOpeningRoundBrace": true
+  },
+  "safeContextKeyword": "self"
+}

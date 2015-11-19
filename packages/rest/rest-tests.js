@@ -1,28 +1,24 @@
-/* global JsonRoutes:false - from simple:json-routes package */
-/* global HTTP:false - from http package */
-/* global testAsyncMulti:false - from test-helpers package */
-
 if (Meteor.isServer) {
   JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
   JsonRoutes.Middleware.use(
     JsonRoutes.Middleware.authenticateMeteorUserByToken
   );
 
-  var Widgets = new Mongo.Collection("widgets");
+  var Widgets = new Mongo.Collection('widgets');
 
-  Meteor.publish("widgets", function () {
+  Meteor.publish('widgets', function () {
     return Widgets.find();
   });
 
-  var Doodles = new Mongo.Collection("doodles");
+  var Doodles = new Mongo.Collection('doodles');
 
   Meteor.methods({
-    "reset-db": function () {
+    'reset-db': function () {
       Widgets.remove({});
 
       _.each(_.range(10), function (index) {
         Widgets.insert({
-          index: index
+          index: index,
         });
       });
 
@@ -30,51 +26,54 @@ if (Meteor.isServer) {
 
       _.each(_.range(10), function (index) {
         Doodles.insert({
-          index: index
+          index: index,
         });
       });
-    }
+    },
   });
 
-  Meteor.publish("doodles-and-widgets", function () {
+  Meteor.publish('doodles-and-widgets', function () {
     return [
       Widgets.find(),
-      Doodles.find()
+      Doodles.find(),
     ];
   });
 
-  Meteor.publish("widgets-manual", function () {
+  Meteor.publish('widgets-manual', function () {
     var self = this;
 
     Widgets.find().forEach(function (widget) {
-      self.added("widgets", widget._id, widget);
+      self.added('widgets', widget._id, widget);
     });
 
     self.ready();
   });
 
-  Meteor.publish("widgets-custom-url", function () {
+  Meteor.publish('widgets-custom-url', function () {
     return Widgets.find();
   }, {
-    url: "i-love-widgets",
-    httpMethod: "post"
+
+    url: 'i-love-widgets',
+    httpMethod: 'post',
   });
 
-  Meteor.publish("widgets-above-index", function (index) {
+  Meteor.publish('widgets-above-index', function (index) {
     return Widgets.find({index: {$gt: parseInt(index, 10)}});
   }, {
-    url: "widgets-with-index-above/:0"
+
+    url: 'widgets-with-index-above/:0',
   });
 
-  Meteor.publish("widgets-above-index-custom-args", function (index) {
+  Meteor.publish('widgets-above-index-custom-args', function (index) {
     return Widgets.find({index: {$gt: parseInt(index, 10)}});
   }, {
+
     getArgsFromRequest: function (request) {
-      return [ parseInt(request.query.index, 10) ];
-    }
+      return [parseInt(request.query.index, 10)];
+    },
   });
 
-  Meteor.publish("widgets-authorized", function () {
+  Meteor.publish('widgets-authorized', function () {
     if (this.userId) {
       return Widgets.find();
     } else {
@@ -83,12 +82,12 @@ if (Meteor.isServer) {
   });
 
   Meteor.methods({
-    "return-five": function () {
+    'return-five': function () {
       return 5;
-    }
+    },
   });
 
-  Meteor.method("return-five-auth", function () {
+  Meteor.method('return-five-auth', function () {
     if (this.userId) {
       return 5;
     } else {
@@ -96,39 +95,39 @@ if (Meteor.isServer) {
     }
   });
 
-  Meteor.method("status-code", function () {
+  Meteor.method('status-code', function () {
     this.setHttpStatusCode(222);
   });
 
-  Meteor.method("throws-error", function () {
+  Meteor.method('throws-error', function () {
     throw new Error('Bad');
   });
 
-  Meteor.method("throws-meteor-error", function () {
+  Meteor.method('throws-meteor-error', function () {
     throw new Meteor.Error('foo-bar', 'Foo');
   });
 
-  Meteor.method("throws-sanitized-error", function () {
+  Meteor.method('throws-sanitized-error', function () {
     var error = new Error('Bad');
     error.sanitizedError = new Meteor.Error('foo-bar', 'Foo');
     throw error;
   });
 
-  Meteor.method("throws-error-custom", function () {
+  Meteor.method('throws-error-custom', function () {
     var error = new Error('Bad');
     error.data = {ding: 'dong'};
     error.statusCode = 499;
     throw error;
   });
 
-  Meteor.method("throws-meteor-error-custom", function () {
+  Meteor.method('throws-meteor-error-custom', function () {
     var error = new Meteor.Error('foo-bar', 'Foo');
     error.data = {ding: 'dong'};
     error.statusCode = 499;
     throw error;
   });
 
-  Meteor.method("throws-sanitized-error-custom", function () {
+  Meteor.method('throws-sanitized-error-custom', function () {
     var error = new Error('Bad');
     error.data = {ding: 'ding'};
     error.statusCode = 999;
@@ -138,34 +137,36 @@ if (Meteor.isServer) {
     throw error;
   });
 
-  Meteor.method("add-all-arguments", function (a, b, c) {
+  Meteor.method('add-all-arguments', function (a, b, c) {
     return a + b + c;
   });
 
-  Meteor.method("add-arguments-from-url", function (a, b) {
+  Meteor.method('add-arguments-from-url', function (a, b) {
     return a + b;
   }, {
-    url: "/add-arguments-from-url/:a/:b",
+
+    url: '/add-arguments-from-url/:a/:b',
     getArgsFromRequest: function (request) {
       var a = request.params.a;
       var b = request.params.b;
 
-      return [ parseInt(a, 10), parseInt(b, 10) ];
+      return [parseInt(a, 10), parseInt(b, 10)];
     },
-    httpMethod: "get"
+
+    httpMethod: 'get',
   });
 
-  Tinytest.add("Simple REST - " +
-               "routes exist for mutator methods", function (test) {
+  Tinytest.add('Simple REST - ' +
+               'routes exist for mutator methods', function (test) {
     var mutatorMethodPaths = [
-      "/widgets",
-      "/widgets/:_id",
-      "/doodles",
-      "/doodles/:_id"
+      '/widgets',
+      '/widgets/:_id',
+      '/doodles',
+      '/doodles/:_id',
     ];
 
     _.each(mutatorMethodPaths, function (path) {
-      test.isTrue(!! _.findWhere(JsonRoutes.routes, {path: path}));
+      test.isTrue(!!_.findWhere(JsonRoutes.routes, {path: path}));
     });
   });
 
@@ -173,228 +174,242 @@ if (Meteor.isServer) {
     insert: function () {
       return true;
     },
+
     update: function () {
       return true;
     },
+
     remove: function () {
       return false;
-    }
+    },
   });
 } else {
   // Using Meteor HTTP
-  testAsyncMulti("Simple REST - getting a publication", [
+  testAsyncMulti('Simple REST - getting a publication', [
     function (test, waitFor) {
-      HTTP.post("/methods/reset-db", waitFor(function () {}));
+      HTTP.post('/methods/reset-db', waitFor(function () {}));
     },
+
     function (test, waitFor) {
-      HTTP.get("/publications/widgets", waitFor(function (err, res) {
+      HTTP.get('/publications/widgets', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
     },
+
     function (test, waitFor) {
-      HTTP.get("/publications/widgets-manual", waitFor(function (err, res) {
+      HTTP.get('/publications/widgets-manual', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - getting a publication with multiple cursors", [
+  testAsyncMulti('Simple REST - getting a publication with multiple cursors', [
     function (test, waitFor) {
-      HTTP.get("/publications/doodles-and-widgets",
+      HTTP.get('/publications/doodles-and-widgets',
         waitFor(function (err, res) {
           test.equal(err, null);
           test.equal(_.size(res.data.widgets), 10);
           test.equal(_.size(res.data.doodles), 10);
         })
       );
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - getting a publication with custom URL", [
+  testAsyncMulti('Simple REST - getting a publication with custom URL', [
     function (test, waitFor) {
-      HTTP.post("/i-love-widgets", waitFor(function (err, res) {
+      HTTP.post('/i-love-widgets', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - getting a publication with URL arguments", [
+  testAsyncMulti('Simple REST - getting a publication with URL arguments', [
     function (test, waitFor) {
-      HTTP.get("/widgets-with-index-above/4", waitFor(function (err, res) {
+      HTTP.get('/widgets-with-index-above/4', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 5);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - getting a publication with query arguments", [
+  testAsyncMulti('Simple REST - getting a publication with query arguments', [
     function (test, waitFor) {
-      HTTP.get("/publications/widgets-above-index-custom-args?index=4",
+      HTTP.get('/publications/widgets-above-index-custom-args?index=4',
         waitFor(function (err, res) {
           test.equal(err, null);
           test.equal(_.size(res.data.widgets), 5);
         }));
-    }
+    },
   ]);
 
   var token;
-  testAsyncMulti("Simple REST - getting a publication with authorization", [
+  testAsyncMulti('Simple REST - getting a publication with authorization', [
     function (test, waitFor) {
-      Meteor.call("clearUsers", waitFor(function () {}));
+      Meteor.call('clearUsers', waitFor(function () {}));
     },
+
     function (test, waitFor) {
-      HTTP.post("/users/register", { data: {
-        username: "test",
-        email: "test@test.com",
-        password: "test"
-      }}, waitFor(function (err, res) {
+      HTTP.post('/users/register', { data: {
+        username: 'test',
+        email: 'test@test.com',
+        password: 'test',
+      }, }, waitFor(function (err, res) {
         test.equal(err, null);
         test.isTrue(Match.test(res.data, {
           id: String,
           token: String,
-          tokenExpires: String
+          tokenExpires: String,
         }));
 
         token = res.data.token;
       }));
     },
+
     function (test, waitFor) {
-      HTTP.get("/publications/widgets-authorized", {
-        headers: { Authorization: "Bearer " + token }
+      HTTP.get('/publications/widgets-authorized', {
+        headers: { Authorization: 'Bearer ' + token },
       }, waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 10);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - calling method", [
+  testAsyncMulti('Simple REST - calling method', [
     function (test, waitFor) {
-      HTTP.post("/methods/return-five", waitFor(function (err, res) {
+      HTTP.post('/methods/return-five', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - calling method with auth", [
+  testAsyncMulti('Simple REST - calling method with auth', [
     function (test, waitFor) {
-      HTTP.post("/methods/return-five-auth", {
-        headers: { Authorization: "Bearer " + token }
+      HTTP.post('/methods/return-five-auth', {
+        headers: { Authorization: 'Bearer ' + token },
       }, waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - calling method with wrong auth", [
+  testAsyncMulti('Simple REST - calling method with wrong auth', [
     function (test, expect) {
-      HTTP.post("/methods/return-five-auth", {
-        headers: { Authorization: "Bearer foo" }
+      HTTP.post('/methods/return-five-auth', {
+        headers: { Authorization: 'Bearer foo' },
       }, expect(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 0);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method error", [
+  testAsyncMulti('Simple REST - method error', [
     function (test, expect) {
-      HTTP.post("/methods/throws-error", expect(function (err, res) {
+      HTTP.post('/methods/throws-error', expect(function (err, res) {
         test.isTrue(!!err);
-        test.equal(res.data.error, "internal-server-error");
+        test.equal(res.data.error, 'internal-server-error');
         test.equal(res.statusCode, 500);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method meteor error", [
+  testAsyncMulti('Simple REST - method meteor error', [
     function (test, expect) {
-      HTTP.post("/methods/throws-meteor-error", expect(function (err, res) {
+      HTTP.post('/methods/throws-meteor-error', expect(function (err, res) {
         test.isTrue(!!err);
-        test.equal(res.data.reason, "Foo");
+        test.equal(res.data.reason, 'Foo');
         test.equal(res.statusCode, 400);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method error with meteor error", [
+  testAsyncMulti('Simple REST - method error with meteor error', [
     function (test, expect) {
-      HTTP.post("/methods/throws-sanitized-error", expect(function (err, res) {
+      HTTP.post('/methods/throws-sanitized-error', expect(function (err, res) {
         test.isTrue(!!err);
-        test.equal(res.data.reason, "Foo");
+        test.equal(res.data.reason, 'Foo');
         test.equal(res.statusCode, 400);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method error custom", [
+  testAsyncMulti('Simple REST - method error custom', [
     function (test, expect) {
-      HTTP.post("/methods/throws-error-custom", expect(function (err, res) {
+      HTTP.post('/methods/throws-error-custom', expect(function (err, res) {
         test.isTrue(!!err);
-        test.equal(res.data.error, "internal-server-error");
+        test.equal(res.data.error, 'internal-server-error');
         test.equal(res.statusCode, 499);
       }));
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method meteor error custom", [
+  testAsyncMulti('Simple REST - method meteor error custom', [
     function (test, expect) {
-      HTTP.post("/methods/throws-meteor-error-custom",
+      HTTP.post('/methods/throws-meteor-error-custom',
                 expect(function (err, res) {
                   test.isTrue(!!err);
-                  test.equal(res.data.data.ding, "dong");
+                  test.equal(res.data.data.ding, 'dong');
                   test.equal(res.statusCode, 499);
                 })
                );
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method error with meteor error custom", [
+  testAsyncMulti('Simple REST - method error with meteor error custom', [
     function (test, expect) {
-      HTTP.post("/methods/throws-sanitized-error-custom",
+      HTTP.post('/methods/throws-sanitized-error-custom',
                 expect(function (err, res) {
                   test.isTrue(!!err);
-                  test.equal(res.data.data.ding, "dong");
+                  test.equal(res.data.data.ding, 'dong');
                   test.equal(res.statusCode, 499);
                 })
                );
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - method status code", [
+  testAsyncMulti('Simple REST - method status code', [
     function (test, expect) {
-      HTTP.post("/methods/status-code", expect(function (err, res) {
+      HTTP.post('/methods/status-code', expect(function (err, res) {
         test.isFalse(!!err);
         test.equal(res.statusCode, 222);
       }));
-    }
+    },
   ]);
 
   var widgets = [];
-  testAsyncMulti("Simple REST - mutator methods", [
+  testAsyncMulti('Simple REST - mutator methods', [
     function (test, waitFor) {
-      HTTP.post("/widgets", { data: [{
-        index: 10
-      }] }, waitFor(function (err) {
+      HTTP.post('/widgets', {
+        data: [
+          {
+            index: 10,
+          },
+        ],
+      }, waitFor(function (err) {
         test.equal(err, null);
       }));
     },
+
     function (test, waitFor) {
-      HTTP.get("/publications/widgets", waitFor(function (err, res) {
+      HTTP.get('/publications/widgets', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(_.size(res.data.widgets), 11);
         widgets = res.data.widgets;
       }));
     },
+
     function (test, waitFor) {
       var _id = _.values(widgets)[0]._id;
-      HTTP.call("patch", "/widgets/" + _id, {
-        data: { specialKey: "Over 9000!" }
+      HTTP.call('patch', '/widgets/' + _id, {
+        data: {
+          specialKey: 'Over 9000!',
+        },
       }, waitFor(function (err) {
         // PhantomJS (pre 2.0) does not send body with PATCH
         // ajax requests so this will fail.
@@ -403,8 +418,9 @@ if (Meteor.isServer) {
         test.equal(err, null);
       }));
     },
+
     function (test, waitFor) {
-      HTTP.get("/publications/widgets", waitFor(function (err, res) {
+      HTTP.get('/publications/widgets', waitFor(function (err, res) {
         test.equal(err, null);
 
         // PhantomJS (pre 2.0) does not send body with PATCH
@@ -414,50 +430,51 @@ if (Meteor.isServer) {
 
         // Make sure our special key was saved
         test.isTrue(!!_.findWhere(res.data.widgets,
-          { specialKey: "Over 9000!" }));
+          { specialKey: 'Over 9000!' }));
       }));
     },
+
     function (test, waitFor) {
-      HTTP.del("/widgets/" + _.values(widgets)[0]._id, waitFor(function (err) {
-        test.equal(err.response.data.reason, "Access denied");
+      HTTP.del('/widgets/' + _.values(widgets)[0]._id, waitFor(function (err) {
+        test.equal(err.response.data.reason, 'Access denied');
       }));
-    }
+    },
   ]);
 
   // Some tests with JQuery as well
-  testAsyncMulti("Simple REST - calling method with JQuery", [
+  testAsyncMulti('Simple REST - calling method with JQuery', [
     function (test, waitFor) {
       $.ajax({
-        method: "post",
-        url: "/methods/add-all-arguments",
+        method: 'post',
+        url: '/methods/add-all-arguments',
         data: JSON.stringify([1, 2, 3]),
-        contentType: "application/json",
+        contentType: 'application/json',
         success: waitFor(function (data) {
           test.equal(data, 6);
-        })
+        }),
       });
-    }
+    },
   ]);
 
   // Some tests with JQuery as well
-  testAsyncMulti("Simple REST - " +
-                 "calling method with JQuery with custom getArgsFromRequest", [
+  testAsyncMulti('Simple REST - ' +
+                 'calling method with JQuery with custom getArgsFromRequest', [
     function (test, waitFor) {
       $.ajax({
-        method: "get",
-        url: "/add-arguments-from-url/2/3",
+        method: 'get',
+        url: '/add-arguments-from-url/2/3',
         success: waitFor(function (data) {
           test.equal(data, 5);
-        })
+        }),
       });
-    }
+    },
   ]);
 
-  testAsyncMulti("Simple REST - getting publication with JQuery", [
+  testAsyncMulti('Simple REST - getting publication with JQuery', [
     function (test, waitFor) {
-      $.get("/publications/widgets", waitFor(function (data) {
+      $.get('/publications/widgets', waitFor(function (data) {
         test.equal(data.widgets.length, 11);
       }));
-    }
+    },
   ]);
 }

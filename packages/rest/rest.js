@@ -1,15 +1,12 @@
-/* global JsonRoutes:false - from simple:json-routes package */
-/* global HttpSubscription:false - from this package */
-
 var oldPublish = Meteor.publish;
 
 Meteor.publish = function (name, handler, options) {
   options = options || {};
 
   var httpOptionKeys = [
-    "url",
-    "getArgsFromRequest",
-    "httpMethod"
+    'url',
+    'getArgsFromRequest',
+    'httpMethod',
   ];
 
   var httpOptions = _.pick(options, httpOptionKeys);
@@ -19,9 +16,9 @@ Meteor.publish = function (name, handler, options) {
   oldPublish(name, handler, ddpOptions);
 
   _.defaults(httpOptions, {
-    url: "publications/" + name,
+    url: 'publications/' + name,
     getArgsFromRequest: defaultGetArgsFromRequest,
-    httpMethod: "get"
+    httpMethod: 'get',
   });
 
   JsonRoutes.add(httpOptions.httpMethod, httpOptions.url, function (req, res) {
@@ -29,10 +26,10 @@ Meteor.publish = function (name, handler, options) {
 
     var httpSubscription = new HttpSubscription({
       request: req,
-      userId: userId
+      userId: userId,
     });
 
-    httpSubscription.on("ready", function (response) {
+    httpSubscription.on('ready', function (response) {
       JsonRoutes.sendResult(res, 200, response);
     });
 
@@ -63,9 +60,9 @@ Meteor.method = function (name, handler, options) {
   options = options || {};
 
   _.defaults(options, {
-    url: "methods/" + name,
+    url: 'methods/' + name,
     getArgsFromRequest: defaultGetArgsFromRequest,
-    httpMethod: "post"
+    httpMethod: 'post',
   });
 
   var methodMap = {};
@@ -75,32 +72,32 @@ Meteor.method = function (name, handler, options) {
   // This is a default collection mutation method, do some special things to
   // make it more RESTful
   if (insideDefineMutationMethods) {
-    var collectionName = name.split("/")[1];
-    var modifier = name.split("/")[2];
+    var collectionName = name.split('/')[1];
+    var modifier = name.split('/')[2];
 
-    var collectionUrl = "/" + collectionName;
-    var itemUrl = "/" + collectionName + "/:_id";
+    var collectionUrl = '/' + collectionName;
+    var itemUrl = '/' + collectionName + '/:_id';
 
-    if (modifier === "insert") {
+    if (modifier === 'insert') {
       // Post the entire new document
-      addHTTPMethod("post", collectionUrl, handler);
-    } else if (modifier === "update") {
+      addHTTPMethod('post', collectionUrl, handler);
+    } else if (modifier === 'update') {
       // PATCH means you submit an incomplete document, to update the fields
       // you have passed
-      addHTTPMethod("patch", itemUrl, handler, {
+      addHTTPMethod('patch', itemUrl, handler, {
         getArgsFromRequest: function (req) {
           return [{ _id: req.params._id }, { $set: req.body }];
-        }
+        },
       });
 
       // We don't have PUT because allow/deny doesn't let you replace documents
       // you can define it manually if you want
-    } else if (modifier === "remove") {
+    } else if (modifier === 'remove') {
       // Can only remove a single document by the _id
-      addHTTPMethod("delete", itemUrl, handler, {
+      addHTTPMethod('delete', itemUrl, handler, {
         getArgsFromRequest: function (req) {
           return [req.params._id];
-        }
+        },
       });
     }
 
@@ -129,10 +126,10 @@ Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
 
 function addHTTPMethod(httpMethod, url, handler, options) {
   options = _.defaults(options || {}, {
-    getArgsFromRequest: defaultGetArgsFromRequest
+    getArgsFromRequest: defaultGetArgsFromRequest,
   });
 
-  JsonRoutes.add("options", url, function (req, res) {
+  JsonRoutes.add('options', url, function (req, res) {
     JsonRoutes.sendResult(res, 200);
   });
 
@@ -144,16 +141,18 @@ function addHTTPMethod(httpMethod, url, handler, options) {
     var methodInvocation = {
       userId: userId,
       setUserId: function () {
-        throw Error("setUserId not implemented in this " +
-                      "version of simple:rest");
+        throw Error('setUserId not implemented in this ' +
+                      'version of simple:rest');
       },
+
       isSimulation: false,
       unblock: function () {
         // no-op
       },
+
       setHttpStatusCode: function (code) {
         statusCode = code;
-      }
+      },
     };
 
     var handlerArgs = options.getArgsFromRequest(req);
@@ -171,12 +170,12 @@ function httpPublishCursor(cursor, subscription) {
 
 function defaultGetArgsFromRequest(req) {
   var args = [];
-  if (req.method === "POST") {
+  if (req.method === 'POST') {
     // by default, the request body is an array which is the arguments
     args = EJSON.fromJSONValue(req.body);
 
     // If it's an object, pass the entire object as the only argument
-    if (! _.isArray(args)) {
+    if (!_.isArray(args)) {
       args = [args];
     }
   }
@@ -185,8 +184,8 @@ function defaultGetArgsFromRequest(req) {
     var parsed = parseInt(name, 10);
 
     if (_.isNaN(parsed)) {
-      throw new Error("REST publish doesn't support parameters " +
-                      "whose names aren't integers.");
+      throw new Error('REST publish doesn\'t support parameters ' +
+                      'whose names aren\'t integers.');
     }
 
     args[parsed] = value;

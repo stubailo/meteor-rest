@@ -1,27 +1,25 @@
-/* global HTTP:false - from http package */
-/* global testAsyncMulti:false - from test-helpers package */
-
 if (Meteor.isServer) {
   Meteor.methods({
     clearUsers: function () {
       if (Meteor.users.find().count() > 100) {
-        throw new Error("a lot of users. are you running this in prod??");
+        throw new Error('a lot of users. are you running this in prod??');
       }
 
       Meteor.users.remove({});
     },
+
     getUser: function (username) {
       return Meteor.users.findOne({username: username});
-    }
+    },
   });
 } else {
   var loginEndpoint = '/users/login';
   var registerEndpoint = '/users/register';
   var userId;
 
-  testAsyncMulti("REST Accounts Password - register and login over HTTP", [
+  testAsyncMulti('REST Accounts Password - register and login over HTTP', [
     function (test, waitFor) {
-      Meteor.call("clearUsers", waitFor(function () {}));
+      Meteor.call('clearUsers', waitFor(function () {}));
     },
 
     // Test a bunch of invalid registration inputs
@@ -32,19 +30,19 @@ if (Meteor.isServer) {
         });
 
         HTTP.post(registerEndpoint, {
-          data: data
+          data: data,
         }, callback);
       };
 
-      testErrorReason({}, "Match failed");
+      testErrorReason({}, 'Match failed');
     },
 
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        username: "newuser",
-        password: "test",
-        email: "newuser@example.com"
-      } }, waitFor(function (err, res) {
+        username: 'newuser',
+        password: 'test',
+        email: 'newuser@example.com',
+      }, }, waitFor(function (err, res) {
         if (err) { throw err; }
 
         userId = res.data.id;
@@ -53,13 +51,13 @@ if (Meteor.isServer) {
         check(res.data, {
           token: String,
           tokenExpires: String,
-          id: String
+          id: String,
         });
       }));
     },
 
     function (test, waitFor) {
-      Meteor.loginWithPassword("newuser", "test", waitFor(function (err) {
+      Meteor.loginWithPassword('newuser', 'test', waitFor(function (err) {
         // Make sure there is no error
         test.equal(err, undefined);
 
@@ -70,9 +68,9 @@ if (Meteor.isServer) {
 
     function (test, waitFor) {
       HTTP.post(loginEndpoint, { data: {
-        username: "newuser",
-        password: "test"
-      } }, waitFor(function (err, res) {
+        username: 'newuser',
+        password: 'test',
+      }, }, waitFor(function (err, res) {
         // Make sure there is no error
         test.equal(err, null);
 
@@ -86,18 +84,18 @@ if (Meteor.isServer) {
     // always be selected.
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        username: "seconduser",
-        password: "test"
-      } }, waitFor(function (err) {
+        username: 'seconduser',
+        password: 'test',
+      }, }, waitFor(function (err) {
         if (err) { throw err; }
       }));
     },
 
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        username: "thirduser",
-        password: "test"
-      } }, waitFor(function (err, res) {
+        username: 'thirduser',
+        password: 'test',
+      }, }, waitFor(function (err, res) {
         if (err) { throw err; }
 
         userId = res.data.id;
@@ -106,9 +104,9 @@ if (Meteor.isServer) {
 
     function (test, waitFor) {
       HTTP.post(loginEndpoint, { data: {
-        username: "thirduser",
-        password: "test"
-      } }, waitFor(function (err, res) {
+        username: 'thirduser',
+        password: 'test',
+      }, }, waitFor(function (err, res) {
         // Make sure there is no error
         test.equal(err, null);
 
@@ -122,36 +120,36 @@ if (Meteor.isServer) {
 
       // Existing username
       HTTP.post(registerEndpoint, { data: {
-        username: "newuser",
-        password: "test",
-        email: "newuser2@example.com"
-      } }, waitFor(function (err) {
-        test.equal(err.response.data.reason, "Username already exists.");
+        username: 'newuser',
+        password: 'test',
+        email: 'newuser2@example.com',
+      }, }, waitFor(function (err) {
+        test.equal(err.response.data.reason, 'Username already exists.');
       }));
 
       // Existing email
       HTTP.post(registerEndpoint, { data: {
-        username: "newuser2",
-        password: "test",
-        email: "newuser@example.com"
-      } }, waitFor(function (err) {
-        test.equal(err.response.data.reason, "Email already exists.");
+        username: 'newuser2',
+        password: 'test',
+        email: 'newuser@example.com',
+      }, }, waitFor(function (err) {
+        test.equal(err.response.data.reason, 'Email already exists.');
       }));
     },
 
     // Make sure we can register with no username, like accounts-password allows
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        password: "test",
-        email: "newusernopassword@example.com"
-      } }, waitFor(function (err, res) {
+        password: 'test',
+        email: 'newusernopassword@example.com',
+      }, }, waitFor(function (err, res) {
         if (err) { throw err; }
 
         // Make sure results have the right shape
         check(res.data, {
           token: String,
           tokenExpires: String,
-          id: String
+          id: String,
         });
       }));
     },
@@ -159,16 +157,16 @@ if (Meteor.isServer) {
     // Make sure we can register with no email, like accounts-password allows
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        username: "newusernoemail",
-        password: "test"
-      } }, waitFor(function (err, res) {
+        username: 'newusernoemail',
+        password: 'test',
+      }, }, waitFor(function (err, res) {
         if (err) { throw err; }
 
         // Make sure results have the right shape
         check(res.data, {
           token: String,
           tokenExpires: String,
-          id: String
+          id: String,
         });
       }));
     },
@@ -176,10 +174,10 @@ if (Meteor.isServer) {
     // Make sure we need an email or a username
     function (test, waitFor) {
       HTTP.post(registerEndpoint, { data: {
-        password: "test"
-      } }, waitFor(function (err) {
-        test.equal(err.response.data.reason, "Need to set a username or email");
+        password: 'test',
+      }, }, waitFor(function (err) {
+        test.equal(err.response.data.reason, 'Need to set a username or email');
       }));
-    }
+    },
   ]);
 }

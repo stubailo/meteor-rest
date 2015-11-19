@@ -179,6 +179,18 @@ SimpleRest.configure({
 });
 ```
 
+### Using ObjectIDs
+
+If any of your collections use ObjectIDs instead of string IDs, tell simple:rest about them and everything will work fine:
+
+```js
+SimpleRest.configure({
+  objectIdCollections: ['widgets', 'doodles']
+});
+```
+
+Where the strings must match the collection name string you pass to the `Mongo.Collection` constructor.
+
 ### Example code with JQuery
 
 Here is how you might call your shiny new HTTP API using JQuery. Note that you must set `contentType` to `"application/json"`, because by default JQuery uses form serialization rather than JSON serialization.

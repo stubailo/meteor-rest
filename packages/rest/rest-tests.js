@@ -4,6 +4,12 @@ if (Meteor.isServer) {
     JsonRoutes.Middleware.authenticateMeteorUserByToken
   );
 
+//  SimpleRest.configure({
+//    objectIdCollections: ['widgets']
+//  });
+//
+//  var Widgets = new Mongo.Collection('widgets', {idGeneration: 'MONGO'});
+
   var Widgets = new Mongo.Collection('widgets');
 
   Meteor.publish('widgets', function () {
@@ -439,12 +445,13 @@ if (Meteor.isServer) {
         data: {
           specialKey: 'Over 9000!',
         },
-      }, waitFor(function (err) {
+      }, waitFor(function (err, response) {
         // PhantomJS (pre 2.0) does not send body with PATCH
         // ajax requests so this will fail.
         // See https://github.com/ariya/phantomjs/issues/11384
         if (window.callPhantom) return;
         test.equal(err, null);
+        test.equal(response.data, 1);
       }));
 
       HTTP.call('patch', '/doodles/123', {

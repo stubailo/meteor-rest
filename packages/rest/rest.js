@@ -5,6 +5,9 @@ SimpleRest = {};
 //   collections: ['widgets', 'doodles']
 // }
 // By default all do. Use empty array for none.
+//
+// Also:
+//    objectIdCollections: ['widgets', 'doodles']
 SimpleRest._config = {};
 SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
@@ -88,6 +91,12 @@ Meteor.method = function (name, handler, options) {
     if (_.isArray(SimpleRest._config.collections) &&
        !_.contains(SimpleRest._config.collections, collectionName)) return;
 
+    var isObjectId = false;
+    if (_.isArray(SimpleRest._config.objectIdCollections) &&
+       _.contains(SimpleRest._config.objectIdCollections, collectionName)) {
+      isObjectId = true;
+    }
+
     var modifier = name.split('/')[2];
 
     var collectionUrl = '/' + collectionName;
@@ -101,7 +110,9 @@ Meteor.method = function (name, handler, options) {
       // you have passed
       addHTTPMethod('patch', itemUrl, handler, {
         getArgsFromRequest: function (req) {
-          return [{ _id: req.params._id }, { $set: req.body }];
+          var id = req.params._id;
+          if (isObjectId) id = new Mongo.ObjectID(id);
+          return [{ _id: id }, { $set: req.body }];
         },
       });
 
@@ -111,7 +122,9 @@ Meteor.method = function (name, handler, options) {
       // Can only remove a single document by the _id
       addHTTPMethod('delete', itemUrl, handler, {
         getArgsFromRequest: function (req) {
-          return [{ _id: req.params._id }];
+          var id = req.params._id;
+          if (isObjectId) id = new Mongo.ObjectID(id);
+          return [{ _id: id }];
         },
       });
     }

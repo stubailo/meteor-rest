@@ -4,11 +4,11 @@ if (Meteor.isServer) {
   JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
 
   JsonRoutes.add('get', 'parse-bearer-token', function (req, res) {
-    JsonRoutes.sendResult(res, 200, req.authToken);
+    JsonRoutes.sendResult(res, {data: req.authToken});
   });
 
   JsonRoutes.add('post', 'parse-bearer-token', function (req, res) {
-    JsonRoutes.sendResult(res, 200, req.authToken);
+    JsonRoutes.sendResult(res, {data: req.authToken});
   });
 } else { // Meteor.isClient
   var token = 'testToken';

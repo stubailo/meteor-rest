@@ -4,7 +4,7 @@ if (Meteor.isServer) {
   );
 
   JsonRoutes.add('get', 'accounts-auth-user', function (req, res) {
-    JsonRoutes.sendResult(res, 200, req.userId);
+    JsonRoutes.sendResult(res, {data: req.userId});
   });
 } else { // Meteor.isClient
   var token;

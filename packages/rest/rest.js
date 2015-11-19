@@ -44,7 +44,7 @@ Meteor.publish = function (name, handler, options) {
     });
 
     httpSubscription.on('ready', function (response) {
-      JsonRoutes.sendResult(res, 200, response);
+      JsonRoutes.sendResult(res, {data: response});
     });
 
     var handlerArgs = httpOptions.getArgsFromRequest(req);
@@ -158,7 +158,7 @@ function addHTTPMethod(httpMethod, url, handler, options) {
   });
 
   JsonRoutes.add('options', url, function (req, res) {
-    JsonRoutes.sendResult(res, 200);
+    JsonRoutes.sendResult(res);
   });
 
   JsonRoutes.add(httpMethod, url, function (req, res) {
@@ -185,7 +185,10 @@ function addHTTPMethod(httpMethod, url, handler, options) {
 
     var handlerArgs = options.getArgsFromRequest(req);
     var handlerReturn = handler.apply(methodInvocation, handlerArgs);
-    JsonRoutes.sendResult(res, statusCode, handlerReturn);
+    JsonRoutes.sendResult(res, {
+      code: statusCode,
+      data: handlerReturn,
+    });
   });
 }
 

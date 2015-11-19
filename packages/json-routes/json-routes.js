@@ -58,7 +58,7 @@ JsonRoutes.add = function (method, path, handler) {
 
   connectRouter[method.toLowerCase()](path, function (req, res, next) {
     // Set headers on response
-    setHeaders(res);
+    setHeaders(res, responseHeaders);
     Fiber(function () {
       try {
         handler(req, res, next);
@@ -83,27 +83,32 @@ JsonRoutes.setResponseHeaders = function (headers) {
  * The JSON response will be pretty printed if NODE_ENV is `development`.
  *
  * @param {Object} res Response object
- * @param {Number} code HTTP status code.
- * @param {Object|Array|null|undefined} data The object to stringify as
- *   the response. If `null`, the response will be "null". If
- *   `undefined`, there will be no response body.
+ * @param {Object} [options]
+ * @param {Number} [options.code] HTTP status code. Default is 200.
+ * @param {Object} [options.headers] Dictionary of headers.
+ * @param {Object|Array|null|undefined} [options.data] The object to
+ *   stringify as the response. If `null`, the response will be "null".
+ *   If `undefined`, there will be no response body.
  */
-JsonRoutes.sendResult = function (res, code, data) {
-  // Set headers on response
-  setHeaders(res);
+JsonRoutes.sendResult = function (res, options) {
+  options = options || {};
+
+  // We've already set global headers on response, but if they
+  // pass in more here, we set those.
+  if (options.headers) setHeaders(res, options.headers);
 
   // Set status code on response
-  res.statusCode = code || 200;
+  res.statusCode = options.code || 200;
 
   // Set response body
-  writeJsonToBody(res, data);
+  writeJsonToBody(res, options.data);
 
   // Send the response
   res.end();
 };
 
-function setHeaders(res) {
-  _.each(responseHeaders, function (value, key) {
+function setHeaders(res, headers) {
+  _.each(headers, function (value, key) {
     res.setHeader(key, value);
   });
 }

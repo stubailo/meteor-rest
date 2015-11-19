@@ -11,7 +11,9 @@ any extra functionality. Based on [connect-route].
 JsonRoutes.add("get", "/posts/:id", function (req, res, next) {
   var id = req.params.id;
 
-  JsonRoutes.sendResult(res, 200, Posts.findOne(id));
+  JsonRoutes.sendResult(res, {
+    data: Posts.findOne(id)
+  });
 });
 ```
 
@@ -31,13 +33,14 @@ Add a server-side route that returns JSON.
   `next` is a callback to call to let the next middleware handle this route. You
   don't need to use this normally.
 
-### JsonRoutes.sendResult(response, code, data)
+### JsonRoutes.sendResult(response, options)
 
 Return data fom a route.
 
 - `response` - Required. The Node response object you got as an argument to your handler function.
-- `code` - Optional. The status code to send. `200` for OK, `500` for internal error, etc. Default is 200.
-- `data` - Optional. The data you want to send back. This is serialized to JSON with content type `application/json`. If `undefined`, there will be no response body.
+- `options.code` - Optional. The status code to send. `200` for OK, `500` for internal error, etc. Default is 200.
+- `options.headers` - Optional. Dictionary of headers to send back.
+- `options.data` - Optional. The data you want to send back. This is serialized to JSON with content type `application/json`. If `undefined`, there will be no response body.
 
 ### Errors
 
@@ -58,7 +61,7 @@ JsonRoutes.add('get', 'widgets', function () {
 
 ### JsonRoutes.setResponseHeaders(headerObj)
 
-Set the headers used by `JsonRoutes.sendResult` for the response. Default value is:
+Set the default headers used by `JsonRoutes.sendResult` for the response. Default value is:
 
 ```js
 {
@@ -66,6 +69,8 @@ Set the headers used by `JsonRoutes.sendResult` for the response. Default value 
   "Pragma": "no-cache"
 }
 ```
+
+You can pass additional headers directly to `JsonRoutes.sendResult`
 
 ## Adding Middleware
 
@@ -109,6 +114,14 @@ Alternatively, you could publish a pure NodeJS middleware package to NPM, and yo
 - By convention, any middleware you create that determines a user ID should save that ID on `req.userId`. See `simple:authenticate-user-by-token` for an example.
 
 ## Change Log
+
+#### 2.0.0
+
+- `JsonRoutes.sendResult` function signature has changed to `(response, options)` and you can now pass in headers. See documentation.
+- `JsonRoutes.sendError` no longer exists. Throw the error instead, and use error handling middleware to parse and return it.
+- `connect` dependency updated to 2.30.2
+- `RestMiddleware` object is exported for packages to add middleware functions to
+- `JsonRoutes.ErrorMiddleware.use` is a new function that can be called to add error handling middleware, globally or per route, to ensure it is added last.
 
 #### 1.0.4
 

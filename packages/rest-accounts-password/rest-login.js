@@ -2,7 +2,7 @@ JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
 JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
 
 JsonRoutes.add('options', '/users/login', function (req, res) {
-  JsonRoutes.sendResult(res, 200);
+  JsonRoutes.sendResult(res);
 });
 
 JsonRoutes.add('post', '/users/login', function (req, res) {
@@ -49,16 +49,18 @@ JsonRoutes.add('post', '/users/login', function (req, res) {
   var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
   check(tokenExpiration, Date);
 
-  JsonRoutes.sendResult(res, 200, {
-    id: result.userId,
-    token: stampedLoginToken.token,
-    tokenExpires: tokenExpiration,
+  JsonRoutes.sendResult(res, {
+    data: {
+      id: result.userId,
+      token: stampedLoginToken.token,
+      tokenExpires: tokenExpiration,
+    },
   });
 
 });
 
 JsonRoutes.add('options', '/users/register', function (req, res) {
-  JsonRoutes.sendResult(res, 200);
+  JsonRoutes.sendResult(res);
 });
 
 JsonRoutes.add('post', '/users/register', function (req, res) {
@@ -87,9 +89,11 @@ JsonRoutes.add('post', '/users/register', function (req, res) {
   check(tokenExpiration, Date);
 
   // Return the same things the login method returns
-  JsonRoutes.sendResult(res, 200, {
-    token: stampedLoginToken.token,
-    tokenExpires: tokenExpiration,
-    id: userId,
+  JsonRoutes.sendResult(res, {
+    data: {
+      token: stampedLoginToken.token,
+      tokenExpires: tokenExpiration,
+      id: userId,
+    },
   });
 });

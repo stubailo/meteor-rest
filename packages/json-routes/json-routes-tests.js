@@ -1,15 +1,15 @@
 // This package is also tested in the `simple:rest` package.
 if (Meteor.isServer) {
   JsonRoutes.add('GET', 'case-insensitive-method-1', function (req, res) {
-    JsonRoutes.sendResult(res, 200, true);
+    JsonRoutes.sendResult(res, {data: true});
   });
 
   JsonRoutes.add('Get', 'case-insensitive-method-2', function (req, res) {
-    JsonRoutes.sendResult(res, 200, true);
+    JsonRoutes.sendResult(res, {data: true});
   });
 
   JsonRoutes.add('get', 'case-insensitive-method-3', function (req, res) {
-    JsonRoutes.sendResult(res, 200, true);
+    JsonRoutes.sendResult(res, {data: true});
   });
 } else {
   // Meteor.isClient

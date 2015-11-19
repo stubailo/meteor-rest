@@ -14,7 +14,7 @@ Package.describe({
 });
 
 Npm.depends({
-  connect: '2.11.0',
+  connect: '2.30.2',
   'connect-route': '0.1.5',
 });
 
@@ -26,9 +26,15 @@ Package.onUse(function (api) {
     'webapp',
   ], 'server');
 
-  api.addFiles('json-routes.js', 'server');
+  api.addFiles([
+    'json-routes.js',
+    'middleware.js',
+  ], 'server');
 
-  api.export('JsonRoutes', 'server');
+  api.export([
+    'JsonRoutes',
+    'RestMiddleware',
+  ], 'server');
 });
 
 Package.onTest(function (api) {

@@ -39,13 +39,22 @@ Return data fom a route.
 - `code` - Optional. The status code to send. `200` for OK, `500` for internal error, etc. Default is 200.
 - `data` - Optional. The data you want to send back. This is serialized to JSON with content type `application/json`. If `undefined`, there will be no response body.
 
-### JsonRoutes.sendError(response, code, error)
+### Errors
 
-Return an error response from a route.
+We recommend that you simply throw an Error or Meteor.Error from your handler function. You can then attach error handling middleware that converts those errors to JSON and sends the response. Here's how to do it with our default error middleware:
 
-- `response` - Required. The Node response object you got as an argument to your handler function.
-- `code` - Optional. The status code to send. Default is 500.
-- `error` - Optional. An `Error` or `Meteor.Error` object. A JSON representation of the error details will be sent. You can set `error.data` or `error.sanitizedError.data` to some extra data to be serialized and sent with the response.
+```js
+JsonRoutes.ErrorMiddleware.use(
+  '/widgets',
+  RestMiddleware.handleErrorAsJson
+);
+
+JsonRoutes.add('get', 'widgets', function () {
+  var error = new Meteor.Error('not-found', 'Not Found');
+  error.statusCode = 404;
+  throw error;
+});
+```
 
 ### JsonRoutes.setResponseHeaders(headerObj)
 
@@ -88,7 +97,7 @@ JsonRoutes.Middleware.someMiddlewareFunc = function (req, res, next) {
 };
 ```
 
-## Change log
+## Change Log
 
 #### 1.0.4
 

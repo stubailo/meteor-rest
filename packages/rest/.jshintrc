@@ -16,6 +16,7 @@
     "Npm",
     "Package",
     "process",
+    "RestMiddleware",
     "testAsyncMulti",
     "Tinytest",
     "window",

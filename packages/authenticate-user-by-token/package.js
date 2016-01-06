@@ -18,7 +18,7 @@ Package.onUse(function (api) {
 
   api.use([
     'accounts-base@1.2.0',
-    'simple:json-routes@1.0.3',
+    'simple:json-routes@2.0.0',
   ], 'server');
 
   api.addFiles('auth.js', 'server');
@@ -29,8 +29,8 @@ Package.onTest(function (api) {
     'check',
     'http',
     'simple:authenticate-user-by-token',
-    'simple:json-routes@1.0.3',
-    'simple:rest-accounts-password@1.0.1',
+    'simple:json-routes@2.0.0',
+    'simple:rest-accounts-password@1.1.0',
     'test-helpers',
     'tinytest',
   ]);

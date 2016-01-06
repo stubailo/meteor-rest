@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:rest-bearer-token-parser',
-  version: '0.0.1',
+  version: '1.0.0',
 
   // Brief, one-line summary of the package.
   summary: 'Parse standard bearer token via request headers, query params ' +
@@ -16,7 +16,7 @@ Package.describe({
 
 Package.onUse(function (api) {
   api.versionsFrom('1.0');
-  api.use('simple:json-routes@1.0.3');
+  api.use('simple:json-routes@2.0.0');
   api.addFiles('bearer_token_parser.js', 'server');
 });
 
@@ -25,7 +25,7 @@ Package.onTest(function (api) {
   api.use('tinytest');
   api.use('test-helpers');
   api.use('http');
-  api.use('simple:json-routes@1.0.3');
-  api.use('simple:rest-accounts-password@1.0.1');
+  api.use('simple:json-routes@2.0.0');
+  api.use('simple:rest-accounts-password@1.1.0');
   api.addFiles('bearer_token_parser_tests.js');
 });

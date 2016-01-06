@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:authenticate-user-by-token',
-  version: '0.0.1',
+  version: '1.0.0',
 
   // Brief, one-line summary of the package.
   summary: 'Authenticate user via auth token',

@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:rest-json-error-handler',
-  version: '0.0.1',
+  version: '1.0.0',
 
   // Brief, one-line summary of the package.
   summary: 'middleware for handling standard Connect errors',
@@ -15,14 +15,14 @@ Package.describe({
 
 Package.onUse(function (api) {
   api.versionsFrom('1.0');
-  api.use('simple:json-routes@1.0.3');
+  api.use('simple:json-routes@2.0.0');
   api.addFiles('json_error_handler.js', 'server');
 });
 
 Package.onTest(function (api) {
   api.use([
     'http',
-    'simple:json-routes@1.0.3',
+    'simple:json-routes@2.0.0',
     'simple:rest-json-error-handler',
     'test-helpers',
     'tinytest',

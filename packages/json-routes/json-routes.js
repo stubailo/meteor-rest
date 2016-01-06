@@ -91,14 +91,6 @@ JsonRoutes.setResponseHeaders = function (headers) {
  *   If `undefined`, there will be no response body.
  */
 JsonRoutes.sendResult = function (res, options) {
-  // Backcompat to 1.0 argument format
-  if (_.isNumber(options)) {
-    options = {
-      code: options,
-      data: arguments[2]
-    };
-  }
-
   options = options || {};
 
   // We've already set global headers on response, but if they

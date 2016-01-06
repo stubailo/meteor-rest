@@ -1,14 +1,20 @@
-var Fiber = Npm.require("fibers");
+/* global JsonRoutes:true */
+
+var Fiber = Npm.require('fibers');
 var connect = Npm.require('connect');
 var connectRoute = Npm.require('connect-route');
 
 JsonRoutes = {};
 
-WebApp.rawConnectHandlers.use(connect.bodyParser());
-WebApp.rawConnectHandlers.use(connect.query());
+WebApp.connectHandlers.use(connect.urlencoded());
+WebApp.connectHandlers.use(connect.json());
+WebApp.connectHandlers.use(connect.query());
 
-JsonRoutes.middleWare = connect();
-WebApp.rawConnectHandlers.use(JsonRoutes.middleWare);
+// Handler for adding middleware before an endpoint (JsonRoutes.middleWare
+// is just for legacy reasons). Also serves as a namespace for middleware
+// packages to declare their middleware functions.
+JsonRoutes.Middleware = JsonRoutes.middleWare = connect();
+WebApp.connectHandlers.use(JsonRoutes.Middleware);
 
 // List of all defined JSON API endpoints
 JsonRoutes.routes = [];
@@ -17,53 +23,101 @@ JsonRoutes.routes = [];
 var connectRouter;
 
 // Register as a middleware
-WebApp.rawConnectHandlers.use(connectRoute(function (router) {
+WebApp.connectHandlers.use(connectRoute(function (router) {
   connectRouter = router;
 }));
 
+// Error middleware must be added last, to catch errors from prior middleware.
+// That's why we cache them and then add after startup.
+var errorMiddlewares = [];
+JsonRoutes.ErrorMiddleware = {
+  use: function () {
+    errorMiddlewares.push(arguments);
+  },
+};
+
+Meteor.startup(function () {
+  _.each(errorMiddlewares, function (errorMiddleware) {
+    WebApp.connectHandlers.use.apply(WebApp.connectHandlers, errorMiddleware);
+  });
+
+  errorMiddlewares = [];
+});
+
 JsonRoutes.add = function (method, path, handler) {
   // Make sure path starts with a slash
-  if (path[0] !== "/") {
-    path = "/" + path;
+  if (path[0] !== '/') {
+    path = '/' + path;
   }
 
   // Add to list of known endpoints
   JsonRoutes.routes.push({
     method: method,
-    path: path
+    path: path,
   });
 
-  connectRouter[method](path, function (req, res, next) {
+  connectRouter[method.toLowerCase()](path, function (req, res, next) {
+    // Set headers on response
+    setHeaders(res, responseHeaders);
     Fiber(function () {
-      handler(req, res, next);
+      try {
+        handler(req, res, next);
+      } catch (error) {
+        next(error);
+      }
     }).run();
   });
 };
 
 var responseHeaders = {
-  "Cache-Control": "no-store",
-  "Pragma": "no-cache"
+  'Cache-Control': 'no-store',
+  Pragma: 'no-cache',
 };
 
 JsonRoutes.setResponseHeaders = function (headers) {
   responseHeaders = headers;
 };
 
-var setHeaders = function (res) {
-  _.each(responseHeaders, function (value, key) {
-    res.setHeader(key, value);
-  });
-};
+/**
+ * Sets the response headers, status code, and body, and ends it.
+ * The JSON response will be pretty printed if NODE_ENV is `development`.
+ *
+ * @param {Object} res Response object
+ * @param {Object} [options]
+ * @param {Number} [options.code] HTTP status code. Default is 200.
+ * @param {Object} [options.headers] Dictionary of headers.
+ * @param {Object|Array|null|undefined} [options.data] The object to
+ *   stringify as the response. If `null`, the response will be "null".
+ *   If `undefined`, there will be no response body.
+ */
+JsonRoutes.sendResult = function (res, options) {
+  options = options || {};
 
-JsonRoutes.sendResult = function (res, code, json) {
-  setHeaders(res);
-  res.statusCode = code;
+  // We've already set global headers on response, but if they
+  // pass in more here, we set those.
+  if (options.headers) setHeaders(res, options.headers);
 
-  if (json !== undefined) {
-    var spacer = process.env.NODE_ENV === 'development' ? 2 : null;
-    res.setHeader("Content-type", "application/json");
-    res.write(JSON.stringify(json, null, spacer));
-  }
+  // Set status code on response
+  res.statusCode = options.code || 200;
 
+  // Set response body
+  writeJsonToBody(res, options.data);
+
+  // Send the response
   res.end();
 };
+
+function setHeaders(res, headers) {
+  _.each(headers, function (value, key) {
+    res.setHeader(key, value);
+  });
+}
+
+function writeJsonToBody(res, json) {
+  if (json !== undefined) {
+    var shouldPrettyPrint = (process.env.NODE_ENV === 'development');
+    var spacer = shouldPrettyPrint ? 2 : null;
+    res.setHeader('Content-type', 'application/json');
+    res.write(JSON.stringify(json, null, spacer));
+  }
+}

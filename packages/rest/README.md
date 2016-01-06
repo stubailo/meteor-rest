@@ -121,6 +121,14 @@ Meteor.method("add-numbers", function (a, b) {
 })
 ```
 
+#### Setting HTTP status code
+
+By default, successful method requests will respond with status code 200 and errors will respond with status code 400. To override this in your method:
+
+```js
+this.setHttpStatusCode(201);
+```
+
 ### Collection methods
 
 The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 
@@ -148,6 +156,40 @@ DELETE /<collection-name>/<_id>
 ```
 
 No request body is necessary for deletion, it just deletes the document with the specified `_id`.
+
+### Choosing Which Collections Should Have Endpoints
+
+By default all collections get endpoints automatically.
+
+To specify only certain collections, in your server code before you define any collections:
+
+```js
+SimpleRest.configure({
+  collections: ['widgets', 'doodles']
+});
+```
+
+Where the strings must match the collection name string you pass to the `Mongo.Collection` constructor.
+
+For no collection endpoints:
+
+```js
+SimpleRest.configure({
+  collections: []
+});
+```
+
+### Using ObjectIDs
+
+If any of your collections use ObjectIDs instead of string IDs, tell simple:rest about them and everything will work fine:
+
+```js
+SimpleRest.configure({
+  objectIdCollections: ['widgets', 'doodles']
+});
+```
+
+Where the strings must match the collection name string you pass to the `Mongo.Collection` constructor.
 
 ### Example code with JQuery
 
@@ -230,6 +272,18 @@ The result looks like:
 
 > Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
 
+### Error Handling
+
+We recommend that you add our default error handler like so:
+
+```js
+JsonRoutes.ErrorMiddleware.use(RestMiddleware.handleErrorAsJson);
+```
+
+This will convert any `Meteor.Error`s that your methods throw to useful JSON responses.
+
+You can set `error.statusCode` before you throw the error if you want a particular status code returned.
+
 ### Cross-origin requests
 
 If you would like to use your API from the client side of a different app, you need to return a special header. You can do this by hooking into a method on the `simple:json-routes` package, like so:
@@ -245,32 +299,13 @@ JsonRoutes.setResponseHeaders({
 });
 ```
 
-### Authentication
+## Change Log
 
-API endpoints generated with this package accept a standard bearer token header (Based on [RFC 6750](http://tools.ietf.org/html/rfc6750#section-2.1) and [OAuth Bearer](http://self-issued.info/docs/draft-ietf-oauth-v2-bearer.html#authz-header)).
+#### Unreleased
 
-```http
-Authorization: Bearer <token>
-```
-
-Here is how you could use Meteor's `http` package to call a method as a logged in user. Inside the method, the current user can be accessed the exact same way as in a normal method call, through `this.userId`.
-
-```js
-HTTP.post("/methods/return-five-auth", {
-  headers: { Authorization: "Bearer " + token }
-}, function (err, res) {
-  console.log(res.data); // 5
-});
-```
-
-### Logging in over HTTP
-
-This package allows you to authenticate API calls using a token, but does not provide methods to get that token over HTTP. Use the following packages to log in over HTTP:
-
-- [`simple:rest-accounts-password`](https://github.com/stubailo/meteor-rest/blob/master/packages/rest-accounts-password/README.md)
-- More coming soon for login with Facebook, Google, etc
-
-## Change log
+- Move auth functionality to separate middleware packages:
+  - rest-bearer-token-parser: Parse a standard bearer token
+  - authenticate-user-by-token: Authenticate a `Meteor.user` via auth token
 
 #### 0.2.3
 

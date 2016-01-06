@@ -1,9 +1,10 @@
 Package.describe({
-  name: 'simple:json-routes',
-  version: '2.0.0',
+  name: 'simple:rest-bearer-token-parser',
+  version: '1.0.0',
 
   // Brief, one-line summary of the package.
-  summary: 'The simplest way to define server-side routes that return JSON',
+  summary: 'Parse standard bearer token via request headers, query params ' +
+           'or body (REST middleware)',
 
   // URL to the Git repository containing the source code for this package.
   git: 'https://github.com/stubailo/meteor-rest',
@@ -13,34 +14,17 @@ Package.describe({
   documentation: 'README.md',
 });
 
-Npm.depends({
-  connect: '2.30.2',
-  'connect-route': '0.1.5',
-});
-
 Package.onUse(function (api) {
   api.versionsFrom('1.0');
-
-  api.use([
-    'underscore',
-    'webapp',
-  ], 'server');
-
-  api.addFiles([
-    'json-routes.js',
-    'middleware.js',
-  ], 'server');
-
-  api.export([
-    'JsonRoutes',
-    'RestMiddleware',
-  ], 'server');
+  api.use('simple:json-routes@2.0.0');
+  api.addFiles('bearer_token_parser.js', 'server');
 });
 
 Package.onTest(function (api) {
+  api.use('simple:rest-bearer-token-parser');
   api.use('tinytest');
   api.use('test-helpers');
-  api.use('simple:json-routes');
   api.use('http');
-  api.addFiles('json-routes-tests.js');
+  api.use('simple:json-routes@2.0.0');
+  api.addFiles('bearer_token_parser_tests.js');
 });

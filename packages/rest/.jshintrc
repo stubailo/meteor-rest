@@ -1,0 +1,26 @@
+{
+  "extends": "../../.jshintrc",
+  "globals": {
+    "HttpConnection": true,
+    "HttpSubscription": true,
+    "SimpleRest": true
+  },
+  "predef": [
+    "check",
+    "EJSON",
+    "JsonRoutes",
+    "HTTP",
+    "Match",
+    "Meteor",
+    "Mongo",
+    "Npm",
+    "Package",
+    "process",
+    "RestMiddleware",
+    "testAsyncMulti",
+    "Tinytest",
+    "window",
+    "_",
+    "$"
+  ]
+}

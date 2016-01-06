@@ -1,0 +1,16 @@
+{
+  "extends": "../../.jshintrc",
+  "globals": {
+
+  },
+  "predef": [
+    "Accounts",
+    "HTTP",
+    "JsonRoutes",
+    "Match",
+    "Meteor",
+    "Npm",
+    "Package",
+    "testAsyncMulti"
+  ]
+}

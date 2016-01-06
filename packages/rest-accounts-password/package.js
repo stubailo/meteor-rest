@@ -20,7 +20,7 @@ Package.onUse(function (api) {
     'accounts-password',
     'check',
     'simple:json-routes@2.0.0',
-    'simple:authenticate-user-by-token',
+    'simple:authenticate-user-by-token@1.0.0',
     'simple:rest-bearer-token-parser',
     'underscore',
   ], 'server');
@@ -34,9 +34,14 @@ Package.onTest(function (api) {
     'check',
     'http',
     'simple:rest-accounts-password',
+    'simple:authenticate-user-by-token',
+    'simple:json-routes',
     'test-helpers',
     'tinytest',
   ]);
 
-  api.addFiles('rest-login-tests.js');
+  api.addFiles([
+    'rest-login-tests.js',
+    'auth_tests.js',
+  ]);
 });

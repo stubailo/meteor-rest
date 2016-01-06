@@ -24,16 +24,4 @@ Package.onUse(function (api) {
   api.addFiles('auth.js', 'server');
 });
 
-Package.onTest(function (api) {
-  api.use([
-    'check',
-    'http',
-    'simple:authenticate-user-by-token',
-    'simple:json-routes@2.0.0',
-    'simple:rest-accounts-password@1.1.0',
-    'test-helpers',
-    'tinytest',
-  ]);
-
-  api.addFiles('auth_tests.js');
-});
+// Tests in rest-accounts-password, to avoid circular dependency

@@ -19,11 +19,12 @@ Npm.depends({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.0');
+  api.versionsFrom('1.2');
 
   api.use([
     'underscore',
     'webapp',
+    'ecmascript',
   ], 'server');
 
   api.addFiles([
@@ -38,9 +39,13 @@ Package.onUse(function (api) {
 });
 
 Package.onTest(function (api) {
-  api.use('tinytest');
-  api.use('test-helpers');
-  api.use('simple:json-routes');
-  api.use('http');
+  api.use([
+    'tinytest',
+    'test-helpers',
+    'simple:json-routes',
+    'http',
+    'ecmascript',
+  ]);
+
   api.addFiles('json-routes-tests.js');
 });

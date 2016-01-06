@@ -13,6 +13,30 @@ SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
 };
 
+SimpleRest._methodOptions = {};
+
+// Set options for a particular DDP method that will later be defined
+SimpleRest.setMethodOptions = function (name, options) {
+  check(name, String);
+
+  // Throw an error if the Method is already defined - too late to pass
+  // options
+  if (_.has(Meteor.server.method_handlers, name)) {
+    throw new Error('Must pass options before Method is defined: '
+      + name);
+  }
+
+  options = options || {};
+
+  _.defaults(options, {
+    url: 'methods/' + name,
+    getArgsFromRequest: defaultGetArgsFromRequest,
+    httpMethod: 'post',
+  });
+
+  SimpleRest._methodOptions[name] = options;
+};
+
 var oldPublish = Meteor.publish;
 Meteor.publish = function (name, handler, options) {
   options = options || {};
@@ -71,13 +95,11 @@ Meteor.publish = function (name, handler, options) {
 
 var oldMethods = Object.getPrototypeOf(Meteor.server).methods;
 Meteor.method = function (name, handler, options) {
-  options = options || {};
-
-  _.defaults(options, {
-    url: 'methods/' + name,
-    getArgsFromRequest: defaultGetArgsFromRequest,
-    httpMethod: 'post',
-  });
+  if (!SimpleRest._methodOptions[name]) {
+    SimpleRest.setMethodOptions(name, options);
+  } else if (options) {
+    throw Error('Options already passed via setMethodOptions.');
+  }
 
   var methodMap = {};
   methodMap[name] = handler;
@@ -104,11 +126,16 @@ Meteor.method = function (name, handler, options) {
 
     if (modifier === 'insert') {
       // Post the entire new document
-      addHTTPMethod('post', collectionUrl, handler);
+      addHTTPMethod(name, handler, {
+        httpMethod: 'post',
+        url: collectionUrl,
+      });
     } else if (modifier === 'update') {
       // PATCH means you submit an incomplete document, to update the fields
       // you have passed
-      addHTTPMethod('patch', itemUrl, handler, {
+      addHTTPMethod(name, handler, {
+        url: itemUrl,
+        httpMethod: 'patch',
         getArgsFromRequest: function (req) {
           var id = req.params._id;
           if (isObjectId) id = new Mongo.ObjectID(id);
@@ -120,7 +147,9 @@ Meteor.method = function (name, handler, options) {
       // you can define it manually if you want
     } else if (modifier === 'remove') {
       // Can only remove a single document by the _id
-      addHTTPMethod('delete', itemUrl, handler, {
+      addHTTPMethod(name, handler, {
+        url: itemUrl,
+        httpMethod: 'delete',
         getArgsFromRequest: function (req) {
           var id = req.params._id;
           if (isObjectId) id = new Mongo.ObjectID(id);
@@ -132,7 +161,7 @@ Meteor.method = function (name, handler, options) {
     return;
   }
 
-  addHTTPMethod(options.httpMethod, options.url, handler, options);
+  addHTTPMethod(name, handler, options);
 };
 
 // Monkey patch _defineMutationMethods so that we can treat them specially
@@ -152,16 +181,18 @@ Meteor.methods = Object.getPrototypeOf(Meteor.server).methods =
     });
   };
 
-function addHTTPMethod(httpMethod, url, handler, options) {
-  options = _.defaults(options || {}, {
+function addHTTPMethod(methodName, handler, options) {
+  options = options || SimpleRest._methodOptions[methodName] || {};
+
+  options = _.defaults(options, {
     getArgsFromRequest: defaultGetArgsFromRequest,
   });
 
-  JsonRoutes.add('options', url, function (req, res) {
+  JsonRoutes.add('options', options.url, function (req, res) {
     JsonRoutes.sendResult(res);
   });
 
-  JsonRoutes.add(httpMethod, url, function (req, res) {
+  JsonRoutes.add(options.httpMethod, options.url, function (req, res) {
     var userId = req.userId || null;
     var statusCode = 200;
 

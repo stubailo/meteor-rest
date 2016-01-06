@@ -90,12 +90,24 @@ HTTP.post("/methods/addNumbers", {
 
 #### Passing options about a method
 
-To pass options about your method's HTTP endpoint, you need to use an alternate method definition syntax that comes from this package – `Meteor.method` — that takes an options object as its last argument:
+To pass options about your method's HTTP endpoint, you can use an alternate method definition syntax that comes from this package – `Meteor.method` — that takes an options object as its last argument:
 
 ```js
 Meteor.method("return-five", function () {
   return 5;
 }, options);
+```
+
+You can also pass options without using the other syntax by calling `SimpleRest.setMethodOptions` _before_ the Method definition:
+
+```js
+SimpleRest.setMethodOptions('return-five', options);
+
+Meteor.methods({
+  'return-five': function () {
+    return 5;
+  }
+});
 ```
 
 #### Available options
@@ -131,7 +143,7 @@ this.setHttpStatusCode(201);
 
 ### Collection methods
 
-The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added. 
+The default Meteor collection methods (insert, update, and remove) are also automatically exposed when this package is added.
 Don't worry, they follow the exact same security rules as in your Meteor DDP app, and allow/deny still works perfectly.
 
 #### Inserting into a collection
@@ -270,7 +282,7 @@ The result looks like:
 ] }
 ```
 
-> Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below. 
+> Note that this package also generates `OPTIONS` endpoints for all of your methods. This is to allow you to enable cross-origin requests if you choose to, by returning an `Access-Control-Allow-Origin` header. More on that below.
 
 ### Error Handling
 
@@ -301,7 +313,11 @@ JsonRoutes.setResponseHeaders({
 
 ## Change Log
 
-#### Unreleased
+#### 1.1.0
+
+- Add `SimpleRest.setMethodOptions` to enable `mdg:validated-method` mixin.
+
+#### 1.0.0
 
 - Move auth functionality to separate middleware packages:
   - rest-bearer-token-parser: Parse a standard bearer token

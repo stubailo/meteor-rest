@@ -99,6 +99,42 @@ if (Meteor.isServer) {
     },
   });
 
+  SimpleRest.setMethodOptions('return-five-url', {
+    url: '/my-custom-url'
+  });
+
+  Meteor.methods({
+    'return-five-url': function () {
+      return 5;
+    },
+  });
+
+  Tinytest.add('Simple REST - setMethodOptions errors', function (test) {
+    // Setting options then passing them again should fail
+    SimpleRest.setMethodOptions('should-error', {
+      url: '/my-custom-url'
+    });
+
+    test.throws(function () {
+      Meteor.method('should-error', function () {
+        return null;
+      }, { url: '/should-error' });
+    }, /already passed/);
+
+    // Setting method options when the method is already defined should fail
+    Meteor.methods({
+      'already-defined': function () {
+        return null;
+      }
+    });
+
+    test.throws(function () {
+      SimpleRest.setMethodOptions('already-defined', {
+        url: '/my-custom-url'
+      });
+    }, /options before/);
+  });
+
   Meteor.method('return-five-auth', function () {
     if (this.userId) {
       return 5;
@@ -307,6 +343,15 @@ if (Meteor.isServer) {
   testAsyncMulti('Simple REST - calling method', [
     function (test, waitFor) {
       HTTP.post('/methods/return-five', waitFor(function (err, res) {
+        test.equal(err, null);
+        test.equal(res.data, 5);
+      }));
+    },
+  ]);
+
+  testAsyncMulti('Simple REST - setMethodOptions', [
+    function (test, waitFor) {
+      HTTP.post('/my-custom-url', waitFor(function (err, res) {
         test.equal(err, null);
         test.equal(res.data, 5);
       }));

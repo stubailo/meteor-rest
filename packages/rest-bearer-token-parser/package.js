@@ -26,6 +26,5 @@ Package.onTest(function (api) {
   api.use('test-helpers');
   api.use('http');
   api.use('simple:json-routes@2.0.0');
-  api.use('simple:rest-accounts-password@1.1.0');
   api.addFiles('bearer_token_parser_tests.js');
 });

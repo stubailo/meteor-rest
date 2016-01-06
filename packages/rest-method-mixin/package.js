@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:rest-method-mixin',
-  version: '0.0.1',
+  version: '1.0.0',
   // Brief, one-line summary of the package.
   summary: 'Mixin for simple:rest with ValidatedMethod',
   // URL to the Git repository containing the source code for this package.

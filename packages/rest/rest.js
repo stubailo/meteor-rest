@@ -22,8 +22,8 @@ SimpleRest.setMethodOptions = function (name, options) {
   // Throw an error if the Method is already defined - too late to pass
   // options
   if (_.has(Meteor.server.method_handlers, name)) {
-    throw new Error('Must pass options before Method is defined: '
-      + name);
+    throw new Error('Must pass options before Method is defined: ' +
+      name);
   }
 
   options = options || {};

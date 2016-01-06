@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:rest',
-  version: '1.0.0',
+  version: '1.1.0',
 
   // Brief, one-line summary of the package.
   summary: 'The easiest way to add a REST API to your Meteor app',

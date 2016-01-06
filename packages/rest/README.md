@@ -1,5 +1,3 @@
-Current status: pre-1.0 preview release - it's stable, but might not have all of the features you need. [Leave feedback in this Hackpad.](https://meteor.hackpad.com/Meteor-Hack-Week-REST-APIs-with-Meteor-XK2NNXqhUvj)
-
 ## One-step JSON API for your publications and methods
 
 ```sh

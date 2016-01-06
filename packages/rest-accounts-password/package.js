@@ -21,7 +21,7 @@ Package.onUse(function (api) {
     'check',
     'simple:json-routes@2.0.0',
     'simple:authenticate-user-by-token@1.0.0',
-    'simple:rest-bearer-token-parser',
+    'simple:rest-bearer-token-parser@1.0.0',
     'underscore',
   ], 'server');
 

@@ -21,7 +21,7 @@
   "maxdepth": false,
   "maxstatements": false,
   "maxcomplexity": false,
-  "maxlen": 80,
+  "maxlen": 100,
   "asi": false,
   "boss": false,
   "debug": false,

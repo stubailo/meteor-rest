@@ -12,6 +12,7 @@
     "Meteor",
     "Package",
     "testAsyncMulti",
+    "RestMiddleware",
     "_"
   ]
 }

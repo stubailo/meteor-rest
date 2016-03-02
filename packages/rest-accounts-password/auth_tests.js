@@ -1,8 +1,4 @@
 if (Meteor.isServer) {
-  JsonRoutes.Middleware.use(
-    JsonRoutes.Middleware.authenticateMeteorUserByToken
-  );
-
   JsonRoutes.add('get', 'accounts-auth-user', function (req, res) {
     JsonRoutes.sendResult(res, {data: req.userId});
   });

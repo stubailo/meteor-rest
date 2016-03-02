@@ -1,5 +1,5 @@
-JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
 JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
+JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
 
 JsonRoutes.add('options', '/users/login', function (req, res) {
   JsonRoutes.sendResult(res);

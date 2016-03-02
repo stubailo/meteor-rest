@@ -57,12 +57,16 @@ HTTP.post("/methods/return-five-auth", {
 
 ### Change log
 
-#### Unreleased 
+#### 1.1.1
+
+- Change order of middleware, and add error middleware
+
+#### 1.1.0
 
 - Add token parsing and auth middleware into the middleware stack
   - This functionality was moved from simple:rest, since it's outside its scope
-  - _Known issue: Middleware is added on all routes (user should have control 
-    over which routes middleware is applied, and at the very least it should be 
+  - _Known issue: Middleware is added on all routes (user should have control
+    over which routes middleware is applied, and at the very least it should be
     restricted to API routes)_
 - Use the latest version of `simple:json-routes` (1.0.3)
 

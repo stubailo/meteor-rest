@@ -26,7 +26,7 @@ htmljs@1.0.5
 http@1.1.1
 id-map@1.0.4
 jquery@1.11.4
-local-test:simple:rest-accounts-password@1.1.0
+local-test:simple:rest-accounts-password@1.1.1
 localstorage@1.0.5
 logging@1.0.8
 meteor@1.1.10
@@ -47,8 +47,9 @@ service-configuration@1.0.5
 sha@1.0.4
 simple:authenticate-user-by-token@1.0.0
 simple:json-routes@2.0.0
-simple:rest-accounts-password@1.1.0
+simple:rest-accounts-password@1.1.1
 simple:rest-bearer-token-parser@1.0.0
+simple:rest-json-error-handler@1.0.0
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 srp@1.0.4

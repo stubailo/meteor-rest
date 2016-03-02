@@ -1,5 +1,9 @@
-JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
 JsonRoutes.Middleware.use(JsonRoutes.Middleware.parseBearerToken);
+JsonRoutes.Middleware.use(JsonRoutes.Middleware.authenticateMeteorUserByToken);
+
+// Handle errors specifically for the login routes correctly
+JsonRoutes.ErrorMiddleware.use('/users/login', RestMiddleware.handleErrorAsJson);
+JsonRoutes.ErrorMiddleware.use('/users/register', RestMiddleware.handleErrorAsJson);
 
 JsonRoutes.add('options', '/users/login', function (req, res) {
   JsonRoutes.sendResult(res);

@@ -57,6 +57,9 @@ JsonRoutes.add = function (method, path, handler) {
   });
 
   connectRouter[method.toLowerCase()](path, function (req, res, next) {
+    // Make sure things later in the chain run in a fiber
+    next = Meteor.bindEnvironment(next);
+
     // Set headers on response
     setHeaders(res, responseHeaders);
     Fiber(function () {

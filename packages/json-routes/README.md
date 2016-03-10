@@ -115,6 +115,10 @@ Alternatively, you could publish a pure NodeJS middleware package to NPM, and yo
 
 ## Change Log
 
+#### 2.1.0
+
+- Fix issue #82 by wrapping the middlewares in a fiber.
+
 #### 2.0.1
 
 - Increase request size limit to 50 MB, PR #88, Issue #75

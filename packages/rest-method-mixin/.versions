@@ -22,7 +22,7 @@ htmljs@1.0.5
 http@1.1.1
 id-map@1.0.4
 jquery@1.11.4
-local-test:simple:rest-method-mixin@1.0.0
+local-test:simple:rest-method-mixin@1.0.1
 logging@1.0.8
 mdg:validated-method@1.0.0
 meteor@1.1.10
@@ -37,9 +37,9 @@ random@1.0.5
 reactive-var@1.0.6
 retry@1.0.4
 routepolicy@1.0.6
-simple:json-routes@2.0.0
-simple:rest@1.1.0
-simple:rest-method-mixin@1.0.0
+simple:json-routes@2.1.0
+simple:rest@1.1.1
+simple:rest-method-mixin@1.0.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 test-helpers@1.0.5

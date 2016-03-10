@@ -23,9 +23,9 @@ JsonRoutes.routes = [];
 var connectRouter;
 
 // Register as a middleware
-WebApp.connectHandlers.use(connectRoute(function (router) {
+WebApp.connectHandlers.use(Meteor.bindEnvironment(connectRoute(function (router) {
   connectRouter = router;
-}));
+})));
 
 // Error middleware must be added last, to catch errors from prior middleware.
 // That's why we cache them and then add after startup.
@@ -38,6 +38,18 @@ JsonRoutes.ErrorMiddleware = {
 
 Meteor.startup(function () {
   _.each(errorMiddlewares, function (errorMiddleware) {
+    errorMiddleware = _.map(errorMiddleware, function (maybeFn) {
+      if (_.isFunction(maybeFn)) {
+        // A connect error middleware needs exactly 4 arguments because they use fn.length === 4 to
+        // decide if something is an error middleware.
+        return function (a, b, c, d) {
+          Meteor.bindEnvironment(maybeFn)(a, b, c, d);
+        }
+      }
+
+      return maybeFn;
+    });
+
     WebApp.connectHandlers.use.apply(WebApp.connectHandlers, errorMiddleware);
   });
 

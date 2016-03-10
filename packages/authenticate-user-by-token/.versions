@@ -39,8 +39,8 @@ reactive-var@1.0.6
 retry@1.0.4
 routepolicy@1.0.6
 service-configuration@1.0.5
-simple:authenticate-user-by-token@1.0.0
-simple:json-routes@2.0.0
+simple:authenticate-user-by-token@1.0.1
+simple:json-routes@2.1.0
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 tracker@1.0.9

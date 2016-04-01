@@ -35,8 +35,8 @@ function getUserIdFromAuthToken(token) {
   }
 
   var user = Meteor.users.findOne({
-    'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token),
-  });
+    'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(token)
+  }, {fields: {_id: 1}});
   if (user) {
     return user._id;
   }

@@ -68,36 +68,40 @@ JsonRoutes.add('options', '/users/register', function (req, res) {
 });
 
 JsonRoutes.add('post', '/users/register', function (req, res) {
-  var options = req.body;
+  if(Accounts._options.forbidClientAccountCreation) {
+    JsonRoutes.sendResult(res, {code: 403});
+  } else {
+    var options = req.body;
 
-  check(options, {
-    username: Match.Optional(String),
-    email: Match.Optional(String),
-    password: String,
-  });
+    check(options, {
+      username: Match.Optional(String),
+      email: Match.Optional(String),
+      password: String,
+    });
 
-  var userId = Accounts.createUser(
-    _.pick(options, 'username', 'email', 'password'));
+    var userId = Accounts.createUser(
+      _.pick(options, 'username', 'email', 'password'));
 
-  // Log in the new user and send back a token
-  var stampedLoginToken = Accounts._generateStampedLoginToken();
-  check(stampedLoginToken, {
-    token: String,
-    when: Date,
-  });
+    // Log in the new user and send back a token
+    var stampedLoginToken = Accounts._generateStampedLoginToken();
+    check(stampedLoginToken, {
+      token: String,
+      when: Date,
+    });
 
-  // This adds the token to the user
-  Accounts._insertLoginToken(userId, stampedLoginToken);
+    // This adds the token to the user
+    Accounts._insertLoginToken(userId, stampedLoginToken);
 
-  var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
-  check(tokenExpiration, Date);
+    var tokenExpiration = Accounts._tokenExpiration(stampedLoginToken.when);
+    check(tokenExpiration, Date);
 
-  // Return the same things the login method returns
-  JsonRoutes.sendResult(res, {
-    data: {
-      token: stampedLoginToken.token,
-      tokenExpires: tokenExpiration,
-      id: userId,
-    },
-  });
+    // Return the same things the login method returns
+    JsonRoutes.sendResult(res, {
+      data: {
+        token: stampedLoginToken.token,
+        tokenExpires: tokenExpiration,
+        id: userId,
+      },
+    });
+  }
 });

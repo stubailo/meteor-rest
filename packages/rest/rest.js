@@ -8,7 +8,10 @@ SimpleRest = {};
 //
 // Also:
 //    objectIdCollections: ['widgets', 'doodles']
-SimpleRest._config = {};
+SimpleRest._config = {
+	methodUrlPrefix: 'methods/',
+	publicationUrlPrefix: 'publications/'
+};
 SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
 };
@@ -29,7 +32,7 @@ SimpleRest.setMethodOptions = function (name, options) {
   options = options || {};
 
   _.defaults(options, {
-    url: 'methods/' + name,
+    url: SimpleRest._config.methodUrlPrefix + name,
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'post',
   });
@@ -54,7 +57,7 @@ Meteor.publish = function (name, handler, options) {
   oldPublish(name, handler, ddpOptions);
 
   _.defaults(httpOptions, {
-    url: 'publications/' + name,
+    url: SimpleRest._config.publicationUrlPrefix + name,
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'get',
   });

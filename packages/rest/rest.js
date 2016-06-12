@@ -9,8 +9,13 @@ SimpleRest = {};
 // Also:
 //    objectIdCollections: ['widgets', 'doodles']
 SimpleRest._config = {
-	methodUrlPrefix: 'methods/',
-	publicationUrlPrefix: 'publications/'
+  urlTransform: (type, name) => {
+    if (type === 'method') return `${SimpleRest._config.methodUrlPrefix}${name}`,
+    if (type === 'publications') return `${SimpleRest._config.publicationUrlPrefix}${name}`,
+    throw new Meteor.Error(404, `Unkown REST type: ${type} name: ${name}`);
+  },
+  methodUrlPrefix: 'methods/',
+  publicationUrlPrefix: 'publications/',
 };
 SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
@@ -32,7 +37,7 @@ SimpleRest.setMethodOptions = function (name, options) {
   options = options || {};
 
   _.defaults(options, {
-    url: SimpleRest._config.methodUrlPrefix + name,
+    url: SimpleRest._config.urlTransform('method', name),
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'post',
   });
@@ -57,7 +62,7 @@ Meteor.publish = function (name, handler, options) {
   oldPublish(name, handler, ddpOptions);
 
   _.defaults(httpOptions, {
-    url: SimpleRest._config.publicationUrlPrefix + name,
+    url: SimpleRest._config.urlTransform('publication', name),
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'get',
   });

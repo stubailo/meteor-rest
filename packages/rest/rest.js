@@ -9,10 +9,10 @@ SimpleRest = {};
 // Also:
 //    objectIdCollections: ['widgets', 'doodles']
 SimpleRest._config = {
-  urlTransform: (type, name) => {
-    if (type === 'method') return `${SimpleRest._config.methodUrlPrefix}${name}`;
-    if (type === 'publications') return `${SimpleRest._config.publicationUrlPrefix}${name}`;
-    throw new Meteor.Error(404, `Unkown REST type: ${type} name: ${name}`);
+  urlTransform: function urlTransform(type, name) {
+    if (type === 'method') return SimpleRest._config.methodUrlPrefix + name;
+    if (type === 'publication') return SimpleRest._config.publicationUrlPrefix + name;
+    throw new Meteor.Error(404, 'Unkown REST type: ' + type + ' name: ' + name);
   },
   methodUrlPrefix: 'methods/',
   publicationUrlPrefix: 'publications/',

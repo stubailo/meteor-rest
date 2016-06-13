@@ -12,10 +12,12 @@ SimpleRest._config = {
   urlTransform: function urlTransform(type, name) {
     if (type === 'method') return SimpleRest._config.methodUrlPrefix + name;
     if (type === 'publication') return SimpleRest._config.publicationUrlPrefix + name;
+    if (type === 'collection') return '/' + name;
+    if (type === 'collection-item') return '/' + name + '/:_id';
     throw new Meteor.Error(404, 'Unkown REST type: ' + type + ' name: ' + name);
   },
-  methodUrlPrefix: 'methods/',
-  publicationUrlPrefix: 'publications/',
+  methodUrlPrefix: '/methods/',
+  publicationUrlPrefix: '/publications/',
 };
 SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
@@ -129,20 +131,17 @@ Meteor.method = function (name, handler, options) {
 
     var modifier = name.split('/')[2];
 
-    var collectionUrl = '/' + collectionName;
-    var itemUrl = '/' + collectionName + '/:_id';
-
     if (modifier === 'insert') {
       // Post the entire new document
       addHTTPMethod(name, handler, {
         httpMethod: 'post',
-        url: collectionUrl,
+        url: SimpleRest._config.urlTransform('collection', collectionName),
       });
     } else if (modifier === 'update') {
       // PATCH means you submit an incomplete document, to update the fields
       // you have passed
       addHTTPMethod(name, handler, {
-        url: itemUrl,
+        url: SimpleRest._config.urlTransform('collection-item', collectionName),
         httpMethod: 'patch',
         getArgsFromRequest: function (req) {
           var id = req.params._id;
@@ -156,7 +155,7 @@ Meteor.method = function (name, handler, options) {
     } else if (modifier === 'remove') {
       // Can only remove a single document by the _id
       addHTTPMethod(name, handler, {
-        url: itemUrl,
+        url: SimpleRest._config.urlTransform('collection-item', collectionName),
         httpMethod: 'delete',
         getArgsFromRequest: function (req) {
           var id = req.params._id;

@@ -8,7 +8,17 @@ SimpleRest = {};
 //
 // Also:
 //    objectIdCollections: ['widgets', 'doodles']
-SimpleRest._config = {};
+SimpleRest._config = {
+  urlTransform: function urlTransform(type, name) {
+    if (type === 'method') return SimpleRest._config.methodUrlPrefix + name;
+    if (type === 'publication') return SimpleRest._config.publicationUrlPrefix + name;
+    if (type === 'collection') return '/' + name;
+    if (type === 'collection-item') return '/' + name + '/:_id';
+    throw new Meteor.Error(404, 'Unkown REST type: ' + type + ' name: ' + name);
+  },
+  methodUrlPrefix: '/methods/',
+  publicationUrlPrefix: '/publications/',
+};
 SimpleRest.configure = function (config) {
   return _.extend(SimpleRest._config, config);
 };
@@ -29,7 +39,7 @@ SimpleRest.setMethodOptions = function (name, options) {
   options = options || {};
 
   _.defaults(options, {
-    url: 'methods/' + name,
+    url: SimpleRest._config.urlTransform('method', name),
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'post',
   });
@@ -54,7 +64,7 @@ Meteor.publish = function (name, handler, options) {
   oldPublish(name, handler, ddpOptions);
 
   _.defaults(httpOptions, {
-    url: 'publications/' + name,
+    url: SimpleRest._config.urlTransform('publication', name),
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'get',
   });
@@ -121,20 +131,17 @@ Meteor.method = function (name, handler, options) {
 
     var modifier = name.split('/')[2];
 
-    var collectionUrl = '/' + collectionName;
-    var itemUrl = '/' + collectionName + '/:_id';
-
     if (modifier === 'insert') {
       // Post the entire new document
       addHTTPMethod(name, handler, {
         httpMethod: 'post',
-        url: collectionUrl,
+        url: SimpleRest._config.urlTransform('collection', collectionName),
       });
     } else if (modifier === 'update') {
       // PATCH means you submit an incomplete document, to update the fields
       // you have passed
       addHTTPMethod(name, handler, {
-        url: itemUrl,
+        url: SimpleRest._config.urlTransform('collection-item', collectionName),
         httpMethod: 'patch',
         getArgsFromRequest: function (req) {
           var id = req.params._id;
@@ -148,7 +155,7 @@ Meteor.method = function (name, handler, options) {
     } else if (modifier === 'remove') {
       // Can only remove a single document by the _id
       addHTTPMethod(name, handler, {
-        url: itemUrl,
+        url: SimpleRest._config.urlTransform('collection-item', collectionName),
         httpMethod: 'delete',
         getArgsFromRequest: function (req) {
           var id = req.params._id;

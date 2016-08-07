@@ -196,29 +196,27 @@ function addHTTPMethod(methodName, handler, options) {
     var userId = req.userId || null;
     var statusCode = 200;
 
-    // XXX replace with a real one?
-    var methodInvocation = {
+    var invocation = new DDPCommon.MethodInvocation({
+      isSimulation: false,
       userId: userId,
       setUserId: function () {
         throw Error('setUserId not implemented in this ' +
                       'version of simple:rest');
       },
-
-      isSimulation: false,
       unblock: function () {
-        // no-op
       },
-
       setHttpStatusCode: function (code) {
         statusCode = code;
       },
-    };
-
-    var handlerArgs = options.getArgsFromRequest(req);
-    var handlerReturn = handler.apply(methodInvocation, handlerArgs);
+      connection: {},
+    });
+    var result = DDP._CurrentInvocation.withValue(invocation, function () {
+      var handlerArgs = options.getArgsFromRequest(req);
+      return handler.apply(invocation, handlerArgs);
+    });
     JsonRoutes.sendResult(res, {
       code: statusCode,
-      data: handlerReturn,
+      data: result,
     });
   });
 }

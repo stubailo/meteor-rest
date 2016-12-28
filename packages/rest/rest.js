@@ -45,6 +45,7 @@ Meteor.publish = function (name, handler, options) {
     'url',
     'getArgsFromRequest',
     'httpMethod',
+    'transformResponse',
   ];
 
   var httpOptions = _.pick(options, httpOptionKeys);
@@ -57,6 +58,9 @@ Meteor.publish = function (name, handler, options) {
     url: 'publications/' + name,
     getArgsFromRequest: defaultGetArgsFromRequest,
     httpMethod: 'get',
+    transformResponse: function(response) {
+      return response;
+    }
   });
 
   JsonRoutes.add(httpOptions.httpMethod, httpOptions.url, function (req, res) {
@@ -68,6 +72,7 @@ Meteor.publish = function (name, handler, options) {
     });
 
     httpSubscription.on('ready', function (response) {
+      response = httpOptions.transformResponse(response);
       JsonRoutes.sendResult(res, {data: response});
     });
 

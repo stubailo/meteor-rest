@@ -105,15 +105,15 @@ JsonRoutes.setResponseHeaders = function (headers) {
 JsonRoutes.sendResult = function (res, options) {
   options = options || {};
 
-  // We've already set global headers on response, but if they
-  // pass in more here, we set those.
-  if (options.headers) setHeaders(res, options.headers);
-
   // Set status code on response
   res.statusCode = options.code || 200;
 
   // Set response body
   writeJsonToBody(res, options.data);
+
+  // We've already set global headers on response, but if they
+  // pass in more here, we set those.
+  if (options.headers) setHeaders(res, options.headers);
 
   // Send the response
   res.end();

@@ -56,6 +56,22 @@ Meteor.startup(function () {
   errorMiddlewares = [];
 });
 
+const isAsync = function(func) {
+  const string = func.toString().trim();
+
+  return !!(
+    // native
+    string.match(/^async /) ||
+    // babel
+    string.match(/return _ref[^\.]*\.apply/) ||
+    // meteor
+    string.match(/return Promise.asyncApply/)
+  );
+};
+const asyncRoute = func => (req, res, next = Log.error) => {
+	Promise.resolve(func(req, res)).catch(next);
+};
+
 JsonRoutes.add = function (method, path, handler) {
   // Make sure path starts with a slash
   if (path[0] !== '/') {
@@ -73,6 +89,7 @@ JsonRoutes.add = function (method, path, handler) {
     setHeaders(res, responseHeaders);
     Fiber(function () {
       try {
+        if (isAsync(handler)) handler = asyncRoute(handler);
         handler(req, res, next);
       } catch (error) {
         next(error);

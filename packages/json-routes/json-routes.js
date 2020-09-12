@@ -71,9 +71,12 @@ JsonRoutes.add = function (method, path, handler) {
   connectRouter[method.toLowerCase()](path, function (req, res, next) {
     // Set headers on response
     setHeaders(res, responseHeaders);
-    Fiber(function () {
+    Fiber(async () => {
       try {
-        handler(req, res, next);
+        const result = handler(req, res, next);
+        if(result && typeof result.then === 'function') {
+          await result
+        }
       } catch (error) {
         next(error);
       }

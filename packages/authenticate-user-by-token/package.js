@@ -1,6 +1,6 @@
 Package.describe({
   name: 'simple:authenticate-user-by-token',
-  version: '1.0.1',
+  version: '1.0.2',
 
   // Brief, one-line summary of the package.
   summary: 'Authenticate user via auth token',
@@ -14,10 +14,10 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-  api.versionsFrom('1.0');
+  api.versionsFrom(['1.0', '2.3']);
 
   api.use([
-    'accounts-base@1.2.0',
+    'accounts-base',
     'simple:json-routes@2.1.0',
   ], 'server');
 
